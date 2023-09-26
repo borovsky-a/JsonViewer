@@ -61,7 +61,6 @@
     </ApplicationDefinition>
     <Compile Include="Controls\Behaviors\BindableSelectedItemBehavior.cs" />
     <Compile Include="Controls\Converters\DisplayNodeValueConverter.cs" />
-    <Compile Include="Controls\Converters\TreeViewItemBgValueConverter.cs" />
     <Compile Include="Controls\VirtualizingStackPanelEx.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Model\JsonReaderResponse.cs" />

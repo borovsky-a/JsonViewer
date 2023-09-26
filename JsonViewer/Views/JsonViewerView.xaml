@@ -16,7 +16,6 @@
     </UserControl.DataContext>
     <UserControl.Resources>
         <converters:DisplayNodeValueConverter x:Key="DisplayNodeValueConverter" />
-        <converters:TreeViewItemBgValueConverter x:Key="TreeViewItemBgValueConverter" />
         <Style TargetType="Button">
             <Setter Property="Padding" Value="4px" />
             <Setter Property="Margin" Value="1,1" />

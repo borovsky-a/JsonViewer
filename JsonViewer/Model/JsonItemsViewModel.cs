@@ -6,7 +6,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace JsonViewer.Model
 {
@@ -114,7 +113,7 @@ namespace JsonViewer.Model
         {
             get => _view;
             set => SetProperty(ref _view, value);
-        }         
+        }
 
         private void FilterExecute()
         {
@@ -167,7 +166,7 @@ namespace JsonViewer.Model
                         Root = Original;
                         Filter = "";
                         break;
-                    }                 
+                    }
                 case nameof(Filter):
                 case nameof(ShowAll):
                     {

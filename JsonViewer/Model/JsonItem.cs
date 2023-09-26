@@ -44,7 +44,7 @@ namespace JsonViewer.Model
 
         public override string ToString()
         {
-            return Index.ToString();
+            return Name.ToString();
         }               
     }
 }

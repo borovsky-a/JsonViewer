@@ -13,9 +13,9 @@ namespace JsonViewer.Controls.Converters
             var item = (JsonItem)value;
             if (string.IsNullOrEmpty(item.Value))
             {
-                return $"[{item.Index}]{item.Name}";
+                return $"{item.Name}";
             }
-            return $"[{item.Index}]{item.Name} : {item.Value}";
+            return $"{item.Name} : {item.Value}";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
