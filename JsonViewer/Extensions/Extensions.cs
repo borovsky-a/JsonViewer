@@ -1,5 +1,8 @@
-﻿using JsonViewer.Model;
+﻿using JsonViewer.Controls;
+using JsonViewer.Model;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
@@ -9,17 +12,7 @@ using System.Windows.Media;
 namespace JsonViewer
 {
     public static class Extensions
-    {
-        public static JsonReaderResponse WithError(this JsonReaderResponse response, string error)
-        {
-            if (response == null)
-            {
-                return response;
-            }
-            response.Error = error;
-            return response;
-        }
-
+    {      
         public static bool ContainsIgnoreCase(this string value1, string value2)
         {
             if (value1 == null || value2 == null)
@@ -27,23 +20,6 @@ namespace JsonViewer
                 return false;
             }
             return CultureInfo.CurrentCulture.CompareInfo.IndexOf(value1, value2, CompareOptions.IgnoreCase) >= 0;
-        }
-
-        private static IEnumerable<T> GetDescendants<T>(this DependencyObject parent) where T : DependencyObject
-        {
-            var count = VisualTreeHelper.GetChildrenCount(parent);
-            for (var i = 0; i < count; ++i)
-            {
-                var child = VisualTreeHelper.GetChild(parent, i);
-                if (child is T node)
-                {
-                    yield return node;
-                }
-                foreach (var subItem in GetDescendants<T>(child))
-                {
-                    yield return subItem;
-                }
-            }
         }
 
         public static JsonItem DeepCopy(this JsonItem original)
@@ -74,7 +50,7 @@ namespace JsonViewer
         public static List<JsonItem> ToList(this JsonItem node)
         {
             return ToList(node, new List<JsonItem>());
-        }
+        }         
 
         public static void GoNext(this ItemsControl container, JsonItem root)
         {
@@ -85,8 +61,49 @@ namespace JsonViewer
         {
             SelectItem(container, root, false);
         }
+        public static void SetParentsState(this JsonItem node, Action<JsonItem> action)
+        {
+            action(node);
+            var parent = node.Parent;
+            while (parent != null)
+            {
+                action(parent);
+                parent = parent.Parent;
+            }
+        }
 
-        private static void SelectItem(ItemsControl container, JsonItem root, bool next)
+        public static JsonItem GetFilteredItem(this JsonItem original, JsonItem current, string filter, bool showAll)
+        {
+            if (string.IsNullOrEmpty(filter))
+            {
+                var clone = original.DeepCopy();
+                var filteredList = current.ToList().Where(o => o.IsMatch);
+                var oroginalsList = clone.ToList();
+                foreach (var filteredItem in filteredList)
+                {
+                    var oItem = oroginalsList.FirstOrDefault(o => o.Index == filteredItem.Index);
+                    if (oItem != null)
+                    {
+                        oItem.SetParentsState((o) =>
+                        {
+                            o.IsVisible = true;
+                            o.IsExpanded = true;
+                        });
+                    }
+                    oItem.IsExpanded = false;
+                }
+                return clone;
+            }
+            else
+            {
+                var clone = original.DeepCopy();
+                PrepareFilterItems(clone, filter);
+                FilterItems(clone, showAll);
+                return clone;
+            }
+        }          
+
+        public static void SelectItem(this ItemsControl container, JsonItem root, bool? next = default)
         {
             var items = root.ToList().Where(o => o.IsMatch).ToList();
             var itemsCount = items.Count;
@@ -102,10 +119,15 @@ namespace JsonViewer
             }
             if (currentItem.IsSelected)
             {
-                var nextItem = next ? 
+                var nextItem = next.HasValue ?  (next.Value ?
                     GetNextItem(items, currentItem) : 
-                    GetPrevItem(items, currentItem);
-                
+                    GetPrevItem(items, currentItem)) : currentItem;
+
+                if(nextItem != currentItem)
+                {
+                    currentItem.IsSelected = false;
+                }
+                nextItem.IsSelected = true;
                 var treeViewItem = container.GetTreeViewItem(nextItem);
                 if (treeViewItem != null)
                 {
@@ -124,6 +146,62 @@ namespace JsonViewer
                 }
             }
         }
+
+        private static void PrepareFilterItems(JsonItem root, string filter)
+        {
+            if (!string.IsNullOrEmpty(root.Name) && (root.Name.ContainsIgnoreCase(filter) || root.Value.ContainsIgnoreCase(filter)))
+            {
+                root.IsMatch = true;
+                root.SetParentsState((o) =>
+                {
+                    o.IsVisible = true;
+                    o.IsExpanded = true;
+                });
+                root.IsExpanded = false;
+            }
+            else
+            {
+                root.IsVisible = false;
+            }
+            if (root.Name == "root")
+            {
+                root.IsVisible = true;
+            }
+            foreach (var node in root.Nodes)
+            {
+                node.IsMatch = node.Name.ContainsIgnoreCase(filter) || root.Value.ContainsIgnoreCase(filter);
+                if (node.IsMatch)
+                {
+                    node.SetParentsState((o) =>
+                    {
+                        o.IsVisible = true;
+                        o.IsExpanded = true;
+                    });
+                    node.IsExpanded = false;
+                }
+                PrepareFilterItems(node, filter);
+            }
+        }
+
+        private static void FilterItems(JsonItem root, bool showAll)
+        {
+            if (!root.IsVisible)
+            {
+                if (!showAll)
+                {
+                    root.Nodes.Clear();
+                }
+                return;
+            }
+
+            var nodes = showAll ? root.Nodes : root.Nodes.Where(o => o.IsVisible).ToList();
+            foreach (var node in nodes)
+            {
+                FilterItems(node, showAll);
+            }
+            root.Nodes = nodes;
+        }
+
         private static JsonItem GetPrevItem(IEnumerable<JsonItem> items, JsonItem current)
         {
             var ordered = items.OrderBy(o => o.Index).ToArray();
@@ -163,7 +241,7 @@ namespace JsonViewer
             return current;
         }
 
-        public static TreeViewItem GetTreeViewItem(this ItemsControl container, JsonItem item)
+        private static TreeViewItem GetTreeViewItem(this ItemsControl container, JsonItem item)
         {
             if(container == null)
             {
@@ -195,24 +273,31 @@ namespace JsonViewer
 
             var itemsHostPanel = (Panel)VisualTreeHelper.GetChild(itemsPresenter, 0);
 
-
             var children = itemsHostPanel.Children;
 
             var virtualizingPanel =
-                itemsHostPanel as VirtualizingStackPanel;
+                itemsHostPanel as VirtualizingStackPanelEx;
 
             var treeViewItems = new List<TreeViewItem>();
 
             for (int i = 0, count = container.Items.Count; i < count; i++)
             {
+                if (virtualizingPanel != null)
+                {
+                    virtualizingPanel.BringIntoView(i);
+                }
                 var subContainer =
-                        (TreeViewItem)container.ItemContainerGenerator.
-                        ContainerFromIndex(i);
+                        (TreeViewItem)container.ItemContainerGenerator.ContainerFromIndex(i);
 
                 if (subContainer == null)
                 {
                     continue;
                 }
+
+                if (virtualizingPanel == null)
+                {
+                    subContainer.BringIntoView();
+                }                            
 
                 if (subContainer.DataContext is JsonItem model)
                 {

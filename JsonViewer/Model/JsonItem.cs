@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace JsonViewer.Model
 {
@@ -10,7 +11,7 @@ namespace JsonViewer.Model
 
         public JsonItem()
         {
-            Nodes = new List<JsonItem>();
+            Nodes = new ObservableCollection<JsonItem>();
         }
 
         public JsonItem Parent { get; set; }
@@ -43,7 +44,7 @@ namespace JsonViewer.Model
 
         public override string ToString()
         {
-            return Name;
+            return Index.ToString();
         }               
     }
 }

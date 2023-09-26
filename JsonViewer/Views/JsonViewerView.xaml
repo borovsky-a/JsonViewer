@@ -7,7 +7,7 @@
     xmlns:converters="clr-namespace:JsonViewer.Controls.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:e="http://schemas.microsoft.com/xaml/behaviors"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:controls="clr-namespace:JsonViewer.Controls"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -16,6 +16,7 @@
     </UserControl.DataContext>
     <UserControl.Resources>
         <converters:DisplayNodeValueConverter x:Key="DisplayNodeValueConverter" />
+        <converters:TreeViewItemBgValueConverter x:Key="TreeViewItemBgValueConverter" />
         <Style TargetType="Button">
             <Setter Property="Padding" Value="4px" />
             <Setter Property="Margin" Value="4px" />
@@ -159,25 +160,41 @@
                     VirtualizingPanel.IsVirtualizing="true">
                     <e:Interaction.Behaviors>
                         <behaviours:BindableSelectedItemBehavior SelectedItem="{Binding Current, Mode=TwoWay}" />
-                    </e:Interaction.Behaviors>                   
+                    </e:Interaction.Behaviors>
+                    <TreeView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <controls:VirtualizingStackPanelEx/>
+                        </ItemsPanelTemplate>
+                    </TreeView.ItemsPanel>
                     <TreeView.ItemTemplate>
                         <HierarchicalDataTemplate ItemsSource="{Binding Nodes}">
                             <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, Converter={StaticResource DisplayNodeValueConverter}}">
-                                <!--<TextBlock.Style>
+                                <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="Foreground" Value="blue" />
+                                                <Setter Property="FontWeight" Value="DemiBold" />
+                                                <Setter Property="Background" Value="#ffffff" />
+                                            </DataTrigger>
                                             <DataTrigger Binding="{Binding IsMatch}" Value="true">
-                                                <Setter Property="Background" Value="Yellow" />
-                                                <Setter Property="Foreground" Value="Black" />
+                                                <Setter Property="Background" Value="#FFFA79" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
-                                </TextBlock.Style>-->
+                                </TextBlock.Style>
                             </TextBlock>
                         </HierarchicalDataTemplate>
                     </TreeView.ItemTemplate>
                     <TreeView.ItemContainerStyle>
-                        <Style TargetType="TreeViewItem">                            
+                        <Style TargetType="TreeViewItem">
+                            <Setter Property="ItemsPanel">
+                                <Setter.Value>
+                                    <ItemsPanelTemplate>
+                                        <controls:VirtualizingStackPanelEx/>
+                                    </ItemsPanelTemplate>
+                                </Setter.Value>
+                            </Setter>
                             <Setter Property="IsSelected" Value="{Binding IsSelected}" />
                             <Setter Property="IsExpanded" Value="{Binding IsExpanded}" />
                         </Style>

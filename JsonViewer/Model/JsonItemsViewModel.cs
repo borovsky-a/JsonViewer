@@ -2,11 +2,11 @@
 using CommunityToolkit.Mvvm.Input;
 using JsonViewer.Service;
 using Microsoft.Win32;
-using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace JsonViewer.Model
 {
@@ -29,8 +29,8 @@ namespace JsonViewer.Model
             _jsonReaderProcessor = new JsonViewerManager();
         }
 
-        public IAsyncRelayCommand ReadFileCommand => 
-            new AsyncRelayCommand(ReadFileCommandExecute);             
+        public IAsyncRelayCommand ReadFileCommand =>
+            new AsyncRelayCommand(ReadFileCommandExecute);
 
         public IRelayCommand ExpandCommand =>
             new RelayCommand(() =>
@@ -38,7 +38,7 @@ namespace JsonViewer.Model
             var clone = Root.DeepCopy();
             CollapseCommandExecute(clone, true);
             Root = clone;
-        });
+        }, CanNavigateCommandExecute);
 
         public IRelayCommand CollapseCommand =>
             new RelayCommand(() =>
@@ -46,21 +46,21 @@ namespace JsonViewer.Model
             var clone = Root.DeepCopy();
             CollapseCommandExecute(clone, false);
             Root = clone;
-        });
+        }, CanNavigateCommandExecute);
 
         public IRelayCommand GoNextCommand =>
             new RelayCommand(() =>
         {
             View.GoNext(Root);
-
-        }, () => View != null);
+            OnPropertyChanged(nameof(Root));
+        }, CanNavigateCommandExecute);
 
         public IRelayCommand GoPrevCommand =>
             new RelayCommand(() =>
         {
             View.GoPrev(Root);
-
-        }, () => View != null);
+            OnPropertyChanged(nameof(Root));
+        }, CanNavigateCommandExecute);
 
         public string Filter
         {
@@ -114,109 +114,13 @@ namespace JsonViewer.Model
         {
             get => _view;
             set => SetProperty(ref _view, value);
-        }
+        }         
 
-        private void ExecuteFilter()
+        private void FilterExecute()
         {
-            if (string.IsNullOrEmpty(Filter))
-            {
-                var clone = Original.DeepCopy();
-                var filteredList = Root.ToList().Where(o => o.IsMatch);
-                var oroginalsList = clone.ToList();
-                foreach (var filteredItem in filteredList)
-                {
-                    var oItem = oroginalsList.FirstOrDefault(o => o.Index == filteredItem.Index);
-                    if (oItem != null)
-                    {
-                        SetParentsState(oItem, (o) =>
-                        {
-                            o.IsVisible = true;
-                            o.IsExpanded = true;
-                        });
-                    }
-                    oItem.IsExpanded = false;
-                }
-                Root = clone;
-            }
-            else
-            {
-                Root = GetFilteredItem(Original);
-            }
+            Root = Original.GetFilteredItem(Root, Filter, ShowAll);
         }
 
-        private JsonItem GetFilteredItem(JsonItem root)
-        {
-            var clone = root.DeepCopy();
-            PrepareFilterItems(clone);
-            FilterItems(clone);
-            return clone;
-        }
-
-        private void PrepareFilterItems(JsonItem root)
-        {
-            if (!string.IsNullOrEmpty(root.Name) && (root.Name.ContainsIgnoreCase(Filter) || root.Value.ContainsIgnoreCase(Filter)))
-            {
-                root.IsMatch = true;
-                SetParentsState(root, (o) =>
-                {
-                    o.IsVisible = true;
-                    o.IsExpanded = true;
-                });
-                root.IsExpanded = false;
-            }
-            else
-            {
-                root.IsVisible = false;
-            }
-            if (root.Name == "root")
-            {
-                root.IsVisible = true;
-            }
-            foreach (var node in root.Nodes)
-            {
-                node.IsMatch = node.Name.ContainsIgnoreCase(Filter) || root.Value.ContainsIgnoreCase(Filter);
-                if (node.IsMatch)
-                {
-                    SetParentsState(node, (o) =>
-                    {
-                        o.IsVisible = true;
-                        o.IsExpanded = true;
-                    });
-                    node.IsExpanded = false;
-                }
-                PrepareFilterItems(node);
-            }
-        }
-
-        private void SetParentsState(JsonItem node, Action<JsonItem> action)
-        {
-            action(node);
-            var parent = node.Parent;
-            while (parent != null)
-            {
-                action(parent);
-                parent = parent.Parent;
-            }
-        }
-
-        private void FilterItems(JsonItem root)
-        {
-            if (!root.IsVisible)
-            {
-                if (!ShowAll)
-                {
-                    root.Nodes.Clear();
-                }
-                return;
-            }
-
-            var nodes = ShowAll ? root.Nodes : root.Nodes.Where(o => o.IsVisible).ToList();
-            foreach (var node in nodes)
-            {
-                FilterItems(node);
-            }
-            root.Nodes = nodes;
-        }
         private async Task ReadFileCommandExecute()
         {
             var openFileDialog = new OpenFileDialog();
@@ -248,6 +152,10 @@ namespace JsonViewer.Model
                 CollapseCommandExecute(node, expand);
             }
         }
+        private bool CanNavigateCommandExecute()
+        {
+            return View != null;
+        }
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
         {
@@ -259,11 +167,11 @@ namespace JsonViewer.Model
                         Root = Original;
                         Filter = "";
                         break;
-                    }
+                    }                 
                 case nameof(Filter):
                 case nameof(ShowAll):
                     {
-                        ExecuteFilter();
+                        FilterExecute();
                         break;
                     }
                 default:
