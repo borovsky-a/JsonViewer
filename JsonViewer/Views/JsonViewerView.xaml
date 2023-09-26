@@ -19,11 +19,11 @@
         <converters:TreeViewItemBgValueConverter x:Key="TreeViewItemBgValueConverter" />
         <Style TargetType="Button">
             <Setter Property="Padding" Value="4px" />
-            <Setter Property="Margin" Value="4px" />
+            <Setter Property="Margin" Value="1,1" />
             <Setter Property="MinWidth" Value="80px" />
         </Style>
         <Style TargetType="TextBox">
-            <Setter Property="Margin" Value="4px" />
+            <Setter Property="Margin" Value="1px" />
             <Setter Property="Padding" Value="4px" />
             <Setter Property="MinWidth" Value="100px" />
         </Style>
@@ -108,7 +108,7 @@
                                     Grid.Column="1"
                                     Width="20"
                                     MinWidth="0"
-                                    Margin="4,4,0,4"
+                                    Margin="4,5.5,0,5.5"
                                     Padding="0"
                                     Command="{Binding GoPrevCommand}"
                                     Content="&#129033;"
@@ -117,6 +117,7 @@
                                     Grid.Column="2"
                                     Width="20"
                                     MinWidth="0"
+                                     Margin="0,5.5,0,5.5"
                                     Padding="0"
                                     Command="{Binding GoNextCommand}"
                                     Content="&#129035;"
