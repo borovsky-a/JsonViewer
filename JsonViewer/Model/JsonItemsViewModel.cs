@@ -7,7 +7,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Xml.Linq;
 
 namespace JsonViewer.Model
 {
@@ -15,6 +14,7 @@ namespace JsonViewer.Model
     {
         private readonly JsonViewerManager _jsonReaderProcessor;
         private JsonItem _rootItem;
+        private JsonItem _currentItem;
         private string _filePath;
         private string _error;
         private string _filter;
@@ -79,16 +79,19 @@ namespace JsonViewer.Model
             get => _filePath;
             set => SetProperty(ref _filePath, value);
         }
+
         public int MaxIndex
         {
             get => _maxIndex;
             set => SetProperty(ref _maxIndex, value);
         }
+
         public bool ShowAll
         {
             get => _showAll;
             set => SetProperty(ref _showAll, value);
         }
+
         public JsonItem Original
         {
             get => _original;
@@ -99,6 +102,12 @@ namespace JsonViewer.Model
         {
             get => _rootItem;
             set => SetProperty(ref _rootItem, value);
+        }
+
+        public JsonItem Current
+        {
+            get => _currentItem;
+            set => SetProperty(ref _currentItem, value);
         }
 
         public ItemsControl View
