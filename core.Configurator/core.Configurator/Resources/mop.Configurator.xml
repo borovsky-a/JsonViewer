@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Program ProgramName="mop.Configurator" Description="Конфигурация приложений" DefaultConfigurationName="DefaultConfiguration" ProgramTypeName="Модуль">
+  <HostTypes>
+    <HostType Name="Сервер"></HostType>
+    <HostType Name="АРМ"></HostType>
+  </HostTypes>
+  <Types>  
+  </Types>
+  <Parameters>
+    <Parameter Name="FileImportManager" ValueTypeName="ParameterSet" IsRequired="True" IsVisible="True" IsReadOnly="True" Description="Параметры технического журналирования">
+      <Parameters>
+        <Parameter EditorType="bool" Name="IsCurrent" ValueTypeName="bool" IsRequired="True" IsVisible="True" IsReadOnly="False" Description="Если '1', по умолчанию будет выбран импорт настроек из файла">
+            <IntValue>0</IntValue>
+            <DefaultStringValue>0</DefaultStringValue>
+        </Parameter>
+		 <Parameter EditorType="bool" Name="SyncRequired" ValueTypeName="bool" IsRequired="True" IsVisible="True" IsReadOnly="False" Description="Если '1', по умолчанию примененные настройки импорта будут применены для экспорта">
+            <IntValue>1</IntValue>
+            <DefaultStringValue>1</DefaultStringValue>
+         </Parameter>
+	    <Parameter EditorType="string" Name="FilePath" ValueTypeName="string" IsRequired="True" IsVisible="True" IsReadOnly="False" Description="Путь к файлу для импорта настроек">
+          <DefaultStringValue></DefaultStringValue>
+          <StringValue></StringValue>
+        </Parameter>
+      </Parameters>
+	</Parameter>   
+	<Parameter Name="TopologyDBImportManager" ValueTypeName="ParameterSet" IsRequired="True" IsVisible="True" IsReadOnly="True" Description="Параметры технического журналирования">
+      <Parameters>
+        <Parameter EditorType="bool" Name="IsCurrent" ValueTypeName="bool" IsRequired="True" IsVisible="True" IsReadOnly="False" Description="Если '1', по умолчанию будет выбран импорт настроек из файла">
+            <IntValue>1</IntValue>
+            <DefaultStringValue>1</DefaultStringValue>
+        </Parameter>
+		 <Parameter EditorType="bool" Name="SyncRequired" ValueTypeName="bool" IsRequired="True" IsVisible="True" IsReadOnly="False" Description="Если '1', по умолчанию примененные настройки импорта будут применены для экспорта">
+            <IntValue>1</IntValue>
+            <DefaultStringValue>1</DefaultStringValue>
+         </Parameter> 
+        <Parameter EditorType="connection" Name="ConnectionString" ValueTypeName="string" IsRequired="True" IsVisible="True" IsReadOnly="False" Description="Строка подключения к БД параметров">
+          <DefaultStringValue></DefaultStringValue>
+          <StringValue></StringValue>
+        </Parameter>
+        <Parameter EditorType="string" Name="Host" ValueTypeName="string" IsRequired="True" IsVisible="True" IsReadOnly="False" Description="Хост приложения">
+          <DefaultStringValue></DefaultStringValue>
+          <StringValue></StringValue>
+        </Parameter>
+		<Parameter EditorType="string" Name="ApplicationName" ValueTypeName="string" IsRequired="True" IsVisible="True" IsReadOnly="False" Description="Имя приложения">
+          <DefaultStringValue></DefaultStringValue>
+          <StringValue></StringValue>
+        </Parameter>      
+        <Parameter EditorType="string" Name="ProgramVersionInstanceCode" ValueTypeName="string" IsRequired="True" IsVisible="True" IsReadOnly="False" Description="Код инстанса приложения">
+          <DefaultStringValue></DefaultStringValue>
+          <StringValue></StringValue>
+        </Parameter>
+      </Parameters>
+	</Parameter>  	
+	 <Parameter Name="FileExportManager" ValueTypeName="ParameterSet" IsRequired="True" IsVisible="True" IsReadOnly="True" Description="Параметры технического журналирования">
+      <Parameters>
+        <Parameter EditorType="bool" Name="IsCurrent" ValueTypeName="bool" IsRequired="True" IsVisible="True" IsReadOnly="False" Description="Если '1', по умолчанию будет выбран импорт настроек из файла">
+            <IntValue>0</IntValue>
+            <DefaultStringValue>0</DefaultStringValue>
+        </Parameter>
+	    <Parameter EditorType="string" Name="FilePath" ValueTypeName="string" IsRequired="True" IsVisible="True" IsReadOnly="False" Description="Путь к файлу для импорта настроек">
+          <DefaultStringValue></DefaultStringValue>
+          <StringValue></StringValue>
+        </Parameter>
+      </Parameters>
+	</Parameter>   
+	<Parameter Name="TopologyDBExportManager" ValueTypeName="ParameterSet" IsRequired="True" IsVisible="True" IsReadOnly="True" Description="Параметры технического журналирования">
+      <Parameters>
+        <Parameter EditorType="bool" Name="IsCurrent" ValueTypeName="bool" IsRequired="True" IsVisible="True" IsReadOnly="False" Description="Если '1', по умолчанию будет выбран импорт настроек из файла">
+            <IntValue>1</IntValue>
+            <DefaultStringValue>1</DefaultStringValue>
+        </Parameter>
+		 <Parameter EditorType="bool" Name="SyncRequired" ValueTypeName="bool" IsRequired="True" IsVisible="True" IsReadOnly="False" Description="Если '1', по умолчанию примененные настройки импорта будут применены для экспорта">
+            <IntValue>1</IntValue>
+            <DefaultStringValue>1</DefaultStringValue>
+         </Parameter> 
+        <Parameter EditorType="connection" Name="ConnectionString" ValueTypeName="string" IsRequired="True" IsVisible="True" IsReadOnly="False" Description="Строка подключения к БД параметров">
+          <DefaultStringValue></DefaultStringValue>
+          <StringValue></StringValue>
+        </Parameter>
+        <Parameter EditorType="string" Name="Host" ValueTypeName="string" IsRequired="True" IsVisible="True" IsReadOnly="False" Description="Хост приложения">
+          <DefaultStringValue></DefaultStringValue>
+          <StringValue></StringValue>
+        </Parameter>
+		<Parameter EditorType="string" Name="ApplicationName" ValueTypeName="string" IsRequired="True" IsVisible="True" IsReadOnly="False" Description="Имя приложения">
+          <DefaultStringValue></DefaultStringValue>
+          <StringValue></StringValue>
+        </Parameter>      
+        <Parameter EditorType="string" Name="ProgramVersionInstanceCode" ValueTypeName="string" IsRequired="True" IsVisible="True" IsReadOnly="False" Description="Код инстанса приложения">
+          <DefaultStringValue></DefaultStringValue>
+          <StringValue></StringValue>
+        </Parameter>
+      </Parameters>
+	</Parameter>  
+  </Parameters>
+</Program>

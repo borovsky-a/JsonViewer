@@ -1,0 +1,411 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{EB83B7B4-E551-4F9D-9212-9545ADFDB7AD}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>mop.Configurator</RootNamespace>
+    <AssemblyName>mop.Configurator</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FT.Common, Version=1.2.59.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FT.Common.1.2.59\lib\net35\FT.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.OracleClient" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="XamlBuildTask" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controls\DpSubscriber.cs" />
+    <Compile Include="Controls\NumericBox\NumericBox.cs" />
+    <Compile Include="Controls\TreeList\Converters\TreeListViewConverter.cs" />
+    <Compile Include="Controls\TreeList\Extensions\DependencyObjectExt.cs" />
+    <Compile Include="Controls\TreeList\ITreeViewItem.cs" />
+    <Compile Include="Controls\TreeList\TreeListView.cs" />
+    <Compile Include="Controls\TreeList\TreeListViewExpander.cs" />
+    <Compile Include="Controls\TreeList\TreeListViewItem.cs" />
+    <Compile Include="Controls\TreeList\TreeViewFirstItemStyleSelector.cs" />
+    <Compile Include="Converters\BindingWidthConverter.cs" />
+    <Compile Include="Converters\DebugVisibilityConverter.cs" />
+    <Compile Include="Converters\InverseBooleanToVisibilityConverter.cs" />
+    <Compile Include="Converters\LogLevelForegroundConverter.cs" />
+    <Compile Include="Converters\ParameterNameValueConverter.cs" />
+    <Compile Include="Converters\SelectedTreeViewItemConverter.cs" />
+    <Compile Include="Core\BaseViewModel.cs" />
+    <Compile Include="Core\ConfigurationProvider.cs" />
+    <Compile Include="Core\ConfiguratorException.cs" />
+    <Compile Include="Core\EventHandlers.cs" />
+    <Compile Include="Core\FileSynchronizationManager.cs" />
+    <Compile Include="Core\IParameterCollectionBuilder.cs" />
+    <Compile Include="Core\ISynchronizationManager.cs" />
+    <Compile Include="Core\ParameterAttribute.cs" />
+    <Compile Include="Core\ParameterChangedEventArgs.cs" />
+    <Compile Include="Core\ParameterCollectionBuilder.cs" />
+    <Compile Include="Core\TopologyDbSynchronizationManager.cs" />
+    <Compile Include="Editors\AccountEditor.cs" />
+    <Compile Include="Editors\AccountEditorView.xaml.cs">
+      <DependentUpon>AccountEditorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\Account\ADObjectResult.cs" />
+    <Compile Include="Editors\Account\ADObjectSettings.cs" />
+    <Compile Include="Editors\Account\ADsPathsProviders.cs" />
+    <Compile Include="Editors\Account\ComInterop.cs" />
+    <Compile Include="Editors\Account\DirectoryObject.cs" />
+    <Compile Include="Editors\Account\DirectoryObjectPickerDialog.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Editors\Account\ExtensionAttributeFor.NET_2.0.cs" />
+    <Compile Include="Editors\Account\IntPtrExtensions.cs" />
+    <Compile Include="Editors\Account\Locations.cs" />
+    <Compile Include="Editors\Account\NameTranslator.cs" />
+    <Compile Include="Editors\Account\ObjectTypes.cs" />
+    <Compile Include="Editors\Account\PInvoke.cs" />
+    <Compile Include="Editors\Account\StructsFlags.cs" />
+    <Compile Include="Editors\Account\UnmanagedArrayOfStrings.cs" />
+    <Compile Include="Editors\DataConnection\AccessConnectionUIControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Editors\DataConnection\AccessConnectionUIControl.designer.cs">
+      <DependentUpon>AccessConnectionUIControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\DataConnection\AddPropertyDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editors\DataConnection\AddPropertyDialog.designer.cs">
+      <DependentUpon>AddPropertyDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\DataConnection\AdoDotNetConnectionProperties.cs" />
+    <Compile Include="Editors\DataConnection\Class1.cs" />
+    <Compile Include="Editors\DataConnection\ContextHelpEventArgs.cs" />
+    <Compile Include="Editors\DataConnection\CustomComponentResourceManager.cs" />
+    <Compile Include="Editors\DataConnection\DataConnectionAdvancedDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editors\DataConnection\DataConnectionAdvancedDialog.designer.cs">
+      <DependentUpon>DataConnectionAdvancedDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\DataConnection\DataConnectionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editors\DataConnection\DataConnectionDialog.designer.cs">
+      <DependentUpon>DataConnectionDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\DataConnection\DataConnectionDialogConfiguration.cs" />
+    <Compile Include="Editors\DataConnection\DataConnectionDialogContext.cs" />
+    <Compile Include="Editors\DataConnection\DataConnectionSourceDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editors\DataConnection\DataConnectionSourceDialog.designer.cs">
+      <DependentUpon>DataConnectionSourceDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\DataConnection\DataProvider.cs" />
+    <Compile Include="Editors\DataConnection\DataSource.cs" />
+    <Compile Include="Editors\DataConnection\DynamicPropertyDescriptor.cs" />
+    <Compile Include="Editors\DataConnection\HelpUtils.cs" />
+    <Compile Include="Editors\DataConnection\IDataConnectionProperties.cs" />
+    <Compile Include="Editors\DataConnection\IDataConnectionUIControl.cs" />
+    <Compile Include="Editors\DataConnection\LayoutUtils.cs" />
+    <Compile Include="Editors\DataConnection\NativeMethods.cs" />
+    <Compile Include="Editors\DataConnection\OdbcConnectionProperties.cs" />
+    <Compile Include="Editors\DataConnection\OdbcConnectionUIControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Editors\DataConnection\OdbcConnectionUIControl.designer.cs">
+      <DependentUpon>OdbcConnectionUIControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\DataConnection\OleDBConnectionProperties.cs" />
+    <Compile Include="Editors\DataConnection\OleDBConnectionUIControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Editors\DataConnection\OleDBConnectionUIControl.designer.cs">
+      <DependentUpon>OleDBConnectionUIControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\DataConnection\OracleConnectionProperties.cs" />
+    <Compile Include="Editors\DataConnection\OracleConnectionUIControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Editors\DataConnection\OracleConnectionUIControl.designer.cs">
+      <DependentUpon>OracleConnectionUIControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\DataConnection\RTLAwareMessageBox.cs" />
+    <Compile Include="Editors\DataConnection\SqlConnectionProperties.cs" />
+    <Compile Include="Editors\DataConnection\SqlConnectionUIControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Editors\DataConnection\SqlConnectionUIControl.designer.cs">
+      <DependentUpon>SqlConnectionUIControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\DataConnection\SqlExpressConnectionUIControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Editors\DataConnection\SqlExpressConnectionUIControl.designer.cs">
+      <DependentUpon>SqlExpressConnectionUIControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\DataConnection\Strings.Designer.cs" />
+    <Compile Include="Editors\DataConnection\UserPreferencedChangedHandler.cs" />
+    <Compile Include="Editors\EditorBase.cs" />
+    <Compile Include="Core\Parameter.cs" />
+    <Compile Include="Core\ParameterCollection.cs" />
+    <Compile Include="Core\RelayCommand.cs" />
+    <Compile Include="Editors\EditorManager.cs" />
+    <Compile Include="Editors\EnumEditor.cs" />
+    <Compile Include="Editors\EnumEditorView.xaml.cs">
+      <DependentUpon>EnumEditorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\NumberEditor.cs" />
+    <Compile Include="Editors\PasswordEditor.cs" />
+    <Compile Include="Editors\PasswordEditorView.xaml.cs">
+      <DependentUpon>PasswordEditorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\SqlConnectionEditor.cs" />
+    <Compile Include="Editors\SqlConnectionEditorView.xaml.cs">
+      <DependentUpon>SqlConnectionEditorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\StringEditor.cs" />
+    <Compile Include="Editors\TimeSpanEditor.cs" />
+    <Compile Include="Editors\TimeSpanEditorView.xaml.cs">
+      <DependentUpon>TimeSpanEditorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Enums\CreateCollectionStatus.cs" />
+    <Compile Include="Extensions\ApplicationExtensions.cs" />
+    <Compile Include="Extensions\ParameterCollectionExtensions.cs" />
+    <Compile Include="Extensions\XElementExtensions.cs" />
+    <Compile Include="Log\Extensions\LoggerExtensions.cs" />
+    <Compile Include="Log\Logger.cs" />
+    <Compile Include="Log\LogLevel.cs" />
+    <Compile Include="Log\LogRecord.cs" />
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ActionViewModel.cs" />
+    <Compile Include="Model\EditValueDialogViewModel.cs" />
+    <Compile Include="Model\ExportDialogViewModel.cs" />
+    <Compile Include="Model\ImportDialogViewModel.cs" />
+    <Compile Include="Model\LogViewModel.cs" />
+    <Compile Include="Model\MainViewModel.cs" />
+    <Compile Include="Model\ParametersViewModel.cs" />
+    <Compile Include="Model\ProgramsViewModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="View\ActionView.xaml.cs">
+      <DependentUpon>ActionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\EditorDialog.xaml.cs">
+      <DependentUpon>EditorDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\NumberEditorView.xaml.cs">
+      <DependentUpon>NumberEditorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\StringEditorView.xaml.cs">
+      <DependentUpon>StringEditorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ExportDialog.xaml.cs">
+      <DependentUpon>ExportDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ImportDialog.xaml.cs">
+      <DependentUpon>ImportDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\LogView.xaml.cs">
+      <DependentUpon>LogView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\OkMessageDialog.xaml.cs">
+      <DependentUpon>OkMessageDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ParametersView.xaml.cs">
+      <DependentUpon>ParametersView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ProgramsView.xaml.cs">
+      <DependentUpon>ProgramsView.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\wpf.Icons\wpf.Icons.csproj">
+      <Project>{bc03989e-4c3f-41ee-aca6-c0b3f20b45ea}</Project>
+      <Name>wpf.Icons</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="Resources\Roboto-Black.ttf" />
+    <None Include="Resources\Roboto-BlackItalic.ttf" />
+    <None Include="Resources\Roboto-Bold.ttf" />
+    <None Include="Resources\Roboto-BoldItalic.ttf" />
+    <None Include="Resources\Roboto-Italic.ttf" />
+    <None Include="Resources\Roboto-Light.ttf" />
+    <None Include="Resources\Roboto-LightItalic.ttf" />
+    <None Include="Resources\Roboto-MediumItalic.ttf" />
+    <Resource Include="Resources\Roboto-Regular.ttf" />
+    <None Include="Resources\Roboto-Thin.ttf" />
+    <None Include="Resources\Roboto-ThinItalic.ttf" />
+    <None Include="Resources\Roboto-Medium.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\error.ico" />
+    <Resource Include="Resources\info.ico" />
+    <Resource Include="Resources\question_mark.ico" />
+    <Resource Include="Resources\settings.ico" />
+    <Resource Include="Resources\success.ico" />
+    <Resource Include="Resources\warn.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Editors\AccountEditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Editors\EnumEditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Editors\PasswordEditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Editors\SqlConnectionEditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Editors\TimeSpanEditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ActionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\EditorDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Editors\NumberEditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Editors\StringEditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ExportDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ImportDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\LogView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\OkMessageDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ParametersView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ProgramsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Editors\DataConnection\AccessConnectionUIControl.resx">
+      <DependentUpon>AccessConnectionUIControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\DataConnection\AddPropertyDialog.resx">
+      <DependentUpon>AddPropertyDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\DataConnection\DataConnectionAdvancedDialog.resx">
+      <DependentUpon>DataConnectionAdvancedDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\DataConnection\DataConnectionDialog.resx">
+      <DependentUpon>DataConnectionDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\DataConnection\DataConnectionSourceDialog.resx">
+      <DependentUpon>DataConnectionSourceDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\DataConnection\OdbcConnectionUIControl.resx">
+      <DependentUpon>OdbcConnectionUIControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\DataConnection\OleDBConnectionUIControl.resx">
+      <DependentUpon>OleDBConnectionUIControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\DataConnection\OracleConnectionUIControl.resx">
+      <DependentUpon>OracleConnectionUIControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\DataConnection\SqlConnectionUIControl.resx">
+      <DependentUpon>SqlConnectionUIControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\DataConnection\SqlExpressConnectionUIControl.resx">
+      <DependentUpon>SqlExpressConnectionUIControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editors\DataConnection\Strings.resx" />
+    <EmbeddedResource Include="Editors\DataConnection\Strings.ru-RU.resx" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\mop.Configurator.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\settings-app.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

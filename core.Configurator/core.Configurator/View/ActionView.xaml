@@ -1,0 +1,43 @@
+﻿<UserControl x:Class="mop.Configurator.View.ActionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:mop.Configurator"
+             xmlns:icons="clr-namespace:wpf.Icons;assembly=wpf.Icons"
+             mc:Ignorable="d" 
+             d:DesignHeight="70" d:DesignWidth="800"     d:DataContext="{d:DesignInstance local:ActionViewModel}" >
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Themes/Generic.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <FontFamily  x:Key="FontAwesome">/wpf.Icons;Component/Resources/#fontawesome</FontFamily>
+
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <StackPanel Orientation="Horizontal">       
+        <Button  Padding="3,5" Margin="10" Command="{Binding ImportDialogCommand}" ToolTip="Выбор конфигурации">
+            <StackPanel Orientation="Horizontal">
+                <!--<TextBlock Text="Выбор конфигурации" Margin="10,0,5,0" VerticalAlignment="Center" Foreground="{StaticResource TextInfo}" />-->
+                <TextBlock  Text="{icons:Icon download}" FontFamily="{StaticResource FontAwesome}" VerticalAlignment="Center"  Margin="5,0" FontSize="18"  Foreground="{StaticResource TextInfo}"/>
+            </StackPanel>
+        </Button>
+        <Button  Padding="3,5" Margin="0,10,10,10" Command="{Binding ExportDialogCommand}" ToolTip="Сохранение конфигурации">
+            <StackPanel Orientation="Horizontal">
+                <!--<TextBlock Text="Сохранение конфигурации" Margin="10,0,5,0" VerticalAlignment="Center" Foreground="{StaticResource TextInfo}" />-->
+                <TextBlock  Text="{icons:Icon save}" FontFamily="{StaticResource FontAwesome}" VerticalAlignment="Center"  Margin="5,0" FontSize="18"  Foreground="{StaticResource TextInfo}"/>
+            </StackPanel>
+        </Button>
+        <Button  Padding="3,5" Margin="0,10,10,10" Command="{Binding RefreshCommand}" ToolTip="Обновить конфигурацию">
+            <StackPanel Orientation="Horizontal">
+                <!--<TextBlock Text="Обновить данные" Margin="10,0,5,0" VerticalAlignment="Center" Foreground="{StaticResource TextInfo}" />-->
+                <TextBlock  Text="{icons:Icon refresh}" FontFamily="{StaticResource FontAwesome}" VerticalAlignment="Center"  Margin="5,0" FontSize="18"  Foreground="{StaticResource TextInfo}"/>
+            </StackPanel>
+        </Button>
+        <TextBlock Padding="3,5" Margin="0,10,10,10" VerticalAlignment="Center">
+            <TextBlock Text="Фильтр :" VerticalAlignment="Center" />
+        </TextBlock>
+        <TextBox Padding="3,5" Margin="0,10,10,10" Width="200"  Text="{Binding Filter, Mode=OneTime}"  KeyUp="TextBox_KeyUp"/>
+    </StackPanel>
+</UserControl>

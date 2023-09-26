@@ -1,0 +1,189 @@
+﻿<UserControl
+    x:Class="JsonViewer.Views.JsonViewerView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Model="clr-namespace:JsonViewer.Model"
+    xmlns:behaviours="clr-namespace:JsonViewer.Controls.Behaviors"
+    xmlns:converters="clr-namespace:JsonViewer.Controls.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:e="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <UserControl.DataContext>
+        <Model:JsonItemsViewModel />
+    </UserControl.DataContext>
+    <UserControl.Resources>
+        <converters:DisplayNodeValueConverter x:Key="DisplayNodeValueConverter" />
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="4px" />
+            <Setter Property="Margin" Value="4px" />
+            <Setter Property="MinWidth" Value="80px" />
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="4px" />
+            <Setter Property="Padding" Value="4px" />
+            <Setter Property="MinWidth" Value="100px" />
+        </Style>
+        <Style TargetType="VirtualizingStackPanel">
+            <Setter Property="UseLayoutRounding" Value="False" />
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <StatusBarItem>
+                <TextBlock
+                    Margin="8,4,0,0"
+                    Text="{Binding FilePath}"
+                    TextWrapping="Wrap" />
+            </StatusBarItem>
+        </Grid>
+        <Grid Grid.Row="1" Margin="0,0,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="200" />
+            </Grid.ColumnDefinitions>
+            <Border
+                Grid.Row="0"
+                Grid.Column="2"
+                Margin="0,8,8,0"
+                BorderBrush="Gray"
+                BorderThickness="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                        </Grid>
+                        <Button
+                            Grid.Column="2"
+                            Command="{Binding ReadFileCommand}"
+                            Content="Выбор файла" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Button
+                                Grid.Column="0"
+                                Command="{Binding ExpandCommand}"
+                                Content="Развернуть" />
+                            <Button
+                                Grid.Column="1"
+                                Command="{Binding CollapseCommand}"
+                                Content="Свернуть" />
+                        </Grid>
+                        <StackPanel Margin="0,4,0,0">
+
+                            <TextBlock
+                                Margin="8,0,0,0"
+                                FontSize="12"
+                                Text="Поиск:" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="24" />
+                                    <ColumnDefinition Width="28" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox
+                                    Grid.Column="0"
+                                    Margin="4,4,0,4"
+                                    Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged, Delay=1000}" />
+                                <Button
+                                    Grid.Column="1"
+                                    Width="20"
+                                    MinWidth="0"
+                                    Margin="4,4,0,4"
+                                    Padding="0"
+                                    Command="{Binding GoPrevCommand}"
+                                    Content="&#129033;"
+                                    FontSize="15" />
+                                <Button
+                                    Grid.Column="2"
+                                    Width="20"
+                                    MinWidth="0"
+                                    Padding="0"
+                                    Command="{Binding GoNextCommand}"
+                                    Content="&#129035;"
+                                    FontSize="15" />
+                            </Grid>
+                            <CheckBox
+                                Margin="8,8,4,4"
+                                FontSize="12"
+                                IsChecked="{Binding ShowAll, Mode=TwoWay, Delay=1000}">
+                                <TextBlock VerticalAlignment="Bottom" Text="Отображать все" />
+                            </CheckBox>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Margin="8,8,0,0" Text="Количество строк:" />
+                                <TextBlock Margin="8,8,0,0" Text="{Binding MaxIndex}" />
+                            </StackPanel>
+                        </StackPanel>
+                        <TextBlock Margin="8,8,0,0" Text="Значение:" />
+                    </StackPanel>
+                    <TextBox
+                        Grid.Row="1"
+                        IsReadOnly="True"
+                        Text="{Binding Current.Value}"
+                        TextWrapping="Wrap" />
+                </Grid>
+            </Border>
+            <GridSplitter
+                Grid.Row="1"
+                Grid.Column="1"
+                Width="2"
+                Margin="0,8"
+                HorizontalAlignment="Stretch" />
+            <Border
+                Grid.Row="0"
+                Grid.Column="0"
+                Margin="8,8,8,0"
+                BorderBrush="Gray"
+                BorderThickness="1">
+                <TreeView
+                    x:Name="tree"
+                    ItemsSource="{Binding Root.Nodes}"
+                    VirtualizingPanel.IsVirtualizing="true">
+                    <e:Interaction.Behaviors>
+                        <behaviours:BindableSelectedItemBehavior SelectedItem="{Binding Current, Mode=TwoWay}" />
+                    </e:Interaction.Behaviors>                   
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Nodes}">
+                            <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, Converter={StaticResource DisplayNodeValueConverter}}">
+                                <!--<TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsMatch}" Value="true">
+                                                <Setter Property="Background" Value="Yellow" />
+                                                <Setter Property="Foreground" Value="Black" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>-->
+                            </TextBlock>
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="TreeViewItem">                            
+                            <Setter Property="IsSelected" Value="{Binding IsSelected}" />
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded}" />
+                        </Style>
+                    </TreeView.ItemContainerStyle>
+                </TreeView>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>
