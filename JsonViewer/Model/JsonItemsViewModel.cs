@@ -19,8 +19,9 @@ namespace JsonViewer.Model
         private string _filter;
         private JsonItem _original;
         private int _maxIndex;
-        private bool _showAll;
+        private bool _showAll = true;
         private ItemsControl _view;
+        private bool _isLoading;
 
         public JsonItemsViewModel()
         {
@@ -29,7 +30,7 @@ namespace JsonViewer.Model
         }
 
         public IAsyncRelayCommand ReadFileCommand =>
-            new AsyncRelayCommand(ReadFileCommandExecute);
+            new AsyncRelayCommand<string>(ReadFileCommandExecute);
 
         public IRelayCommand ExpandCommand =>
             new RelayCommand(() =>
@@ -37,7 +38,7 @@ namespace JsonViewer.Model
             var clone = Root.DeepCopy();
             CollapseCommandExecute(clone, true);
             Root = clone;
-        }, CanNavigateCommandExecute);
+        });
 
         public IRelayCommand CollapseCommand =>
             new RelayCommand(() =>
@@ -45,21 +46,21 @@ namespace JsonViewer.Model
             var clone = Root.DeepCopy();
             CollapseCommandExecute(clone, false);
             Root = clone;
-        }, CanNavigateCommandExecute);
+        });
 
         public IRelayCommand GoNextCommand =>
             new RelayCommand(() =>
         {
             View.GoNext(Root);
             OnPropertyChanged(nameof(Root));
-        }, CanNavigateCommandExecute);
+        });
 
         public IRelayCommand GoPrevCommand =>
-            new RelayCommand(() =>
+            new RelayCommand<object>((parameter) =>
         {
             View.GoPrev(Root);
             OnPropertyChanged(nameof(Root));
-        }, CanNavigateCommandExecute);
+        });
 
         public string Filter
         {
@@ -91,6 +92,12 @@ namespace JsonViewer.Model
             set => SetProperty(ref _showAll, value);
         }
 
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set => SetProperty(ref _isLoading, value);
+        }
+
         public JsonItem Original
         {
             get => _original;
@@ -115,18 +122,31 @@ namespace JsonViewer.Model
             set => SetProperty(ref _view, value);
         }
 
+        public bool CanExecute => View != null &&
+           !IsLoading;
+
+        public bool CanNavigate =>
+            CanExecute &&
+            !string.IsNullOrEmpty(Filter);     
+
         private void FilterExecute()
         {
             Root = Original.GetFilteredItem(Root, Filter, ShowAll);
         }
 
-        private async Task ReadFileCommandExecute()
+        private async Task ReadFileCommandExecute(string refresh)
         {
-            var openFileDialog = new OpenFileDialog();
-            if (openFileDialog.ShowDialog() == true)
+            var isRefreshCommand = bool.Parse(refresh);
+            if(!TryGetFilePath(isRefreshCommand, out var filePath))
             {
-                FilePath = openFileDialog.FileName;
-                var response = await _jsonReaderProcessor.ReadJson(FilePath);
+                return;
+            }
+            IsLoading = true;
+            FilePath = filePath;
+            await Task.Run(async () =>
+            {
+                var response = await
+                    _jsonReaderProcessor.ReadJson(FilePath).ConfigureAwait(false);
                 if (!string.IsNullOrEmpty(response.Error))
                 {
                     Error = response.Error;
@@ -136,8 +156,27 @@ namespace JsonViewer.Model
                     Original = response.Value;
                 }
                 MaxIndex = response.MaxIndex;
-            }
+            });
+            IsLoading = false;            
         }
+
+        private bool TryGetFilePath(bool refresh, out string filePath)
+        {
+            if (refresh)
+            {
+                filePath = FilePath;
+                return !string.IsNullOrEmpty(filePath);
+            }
+            var openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog() == true)
+            {
+                filePath = openFileDialog.FileName;
+                return !string.IsNullOrEmpty(filePath);
+            }
+            filePath = default;
+            return false;
+        }
+
         private void CollapseCommandExecute(JsonItem root, bool expand)
         {
             root.IsExpanded = expand;
@@ -150,11 +189,7 @@ namespace JsonViewer.Model
                 node.IsExpanded = expand;
                 CollapseCommandExecute(node, expand);
             }
-        }
-        private bool CanNavigateCommandExecute()
-        {
-            return View != null;
-        }
+        }       
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
         {
@@ -169,8 +204,11 @@ namespace JsonViewer.Model
                     }
                 case nameof(Filter):
                 case nameof(ShowAll):
+                case nameof(IsLoading):
                     {
                         FilterExecute();
+                        OnPropertyChanged(nameof(CanNavigate));
+                        OnPropertyChanged(nameof(CanExecute));                          
                         break;
                     }
                 default:
