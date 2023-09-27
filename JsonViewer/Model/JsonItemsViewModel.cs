@@ -204,11 +204,19 @@ namespace JsonViewer.Model
                     }
                 case nameof(Filter):
                 case nameof(ShowAll):
+                    {
+                        if(Original != null)
+                        {
+                            FilterExecute();
+                        }
+                        OnPropertyChanged(nameof(CanNavigate));
+                        OnPropertyChanged(nameof(CanExecute));
+                        break;
+                    }
                 case nameof(IsLoading):
                     {
-                        FilterExecute();
                         OnPropertyChanged(nameof(CanNavigate));
-                        OnPropertyChanged(nameof(CanExecute));                          
+                        OnPropertyChanged(nameof(CanExecute));
                         break;
                     }
                 default:
