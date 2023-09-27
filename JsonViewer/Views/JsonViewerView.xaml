@@ -17,7 +17,7 @@
     </UserControl.DataContext>
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
         <converters:DisplayNodeValueConverter x:Key="DisplayNodeValueConverter" />
         <Style TargetType="Button">
             <Setter Property="Padding" Value="4px" />
@@ -77,6 +77,7 @@
                             Grid.Column="2"
                             Command="{Binding ReadFileCommand}"
                             CommandParameter="False"
+                            IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBooleanConverter}}"
                             Content="Выбор файла" />
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -177,7 +178,8 @@
                             <MenuItem
                                 Command="{Binding ReadFileCommand}"
                                 CommandParameter="True"
-                                Header="Обновить" />
+                                Header="Обновить" 
+                                IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBooleanConverter}}"/>
                         </ContextMenu>
                     </TreeView.ContextMenu>
                     <TreeView.ItemsPanel>

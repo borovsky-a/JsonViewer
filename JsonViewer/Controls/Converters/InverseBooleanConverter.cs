@@ -1,23 +1,18 @@
 ﻿using System;
 using System.Globalization;
-using System.Windows;
 using System.Windows.Data;
 
 namespace JsonViewer.Controls.Converters
 {
-    public sealed class InverseBooleanToVisibilityConverter : IValueConverter
+    public sealed class InverseBooleanConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if(!bool.TryParse(value.ToString(), out var boolValue))
             {
-                return Visibility.Visible;
-            }
-            if (boolValue)
-            {
-                return Visibility.Collapsed;
-            }
-            return Visibility.Visible;
+                return true;
+            }             
+            return !boolValue;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
