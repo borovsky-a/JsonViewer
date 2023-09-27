@@ -45,6 +45,7 @@ namespace JsonViewer
             }
             return clone;
         }
+
         public static List<JsonItem> ToList(this JsonItem node)
         {
             return ToList(node, new List<JsonItem>());
@@ -59,6 +60,7 @@ namespace JsonViewer
         {
             SelectItem(container, root, false);
         }
+
         public static void SetParentsState(this JsonItem node, Action<JsonItem> action)
         {
             action(node);
