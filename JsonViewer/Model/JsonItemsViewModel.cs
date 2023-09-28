@@ -135,25 +135,25 @@ namespace JsonViewer.Model
 
         public bool CanNavigate =>
             CanExecute &&
-            !string.IsNullOrEmpty(Filter);     
+            !string.IsNullOrEmpty(Filter);
 
         private void FilterExecute()
         {
             var response = Original.GetFilteredItem(Root, Filter, ShowAll);
             Root = response.Result;
-            MatchesCount = response.Matches.Any() ? response.Matches.Count.ToString() : "";            
+            MatchesCount = response.Matches.Any() ? response.Matches.Count.ToString() : (string.IsNullOrEmpty(Filter) ? "" : "0");
         }
 
         private async Task ReadFileCommandExecute(string refresh)
         {
             var isRefreshCommand = bool.Parse(refresh);
-            if(!TryGetFilePath(isRefreshCommand, out var filePath))
+            if (!TryGetFilePath(isRefreshCommand, out var filePath))
             {
                 return;
             }
             IsLoading = true;
             FilePath = filePath;
-    
+
             await Task.Run(async () =>
             {
                 var response = await
@@ -168,7 +168,7 @@ namespace JsonViewer.Model
                 }
                 MaxIndex = response.MaxIndex;
             });
-            IsLoading = false;      
+            IsLoading = false;
         }
 
         private bool TryGetFilePath(bool refresh, out string filePath)
@@ -200,7 +200,7 @@ namespace JsonViewer.Model
                 node.IsExpanded = expand;
                 CollapseCommandExecute(node, expand);
             }
-        }       
+        }
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
         {
@@ -219,7 +219,7 @@ namespace JsonViewer.Model
                 case nameof(Filter):
                 case nameof(ShowAll):
                     {
-                        if(Original != null)
+                        if (Original != null)
                         {
                             FilterExecute();
                         }
