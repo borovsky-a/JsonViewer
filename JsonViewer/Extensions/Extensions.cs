@@ -318,7 +318,6 @@ namespace JsonViewer
                 {
                     if (model.Index == item.Index)
                     {
-                        subContainer.IsExpanded = false;
                         return subContainer;
                     }
                     if (model.Index < item.Index)
