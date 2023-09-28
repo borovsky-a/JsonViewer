@@ -77,8 +77,8 @@
                             Grid.Column="2"
                             Command="{Binding ReadFileCommand}"
                             CommandParameter="False"
-                            IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBooleanConverter}}"
-                            Content="Выбор файла" />
+                            Content="Выбор файла"
+                            IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBooleanConverter}}" />
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -96,11 +96,24 @@
                                 IsEnabled="{Binding CanExecute}" />
                         </Grid>
                         <StackPanel Margin="0,4,0,0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    Grid.Column="0"
+                                    Margin="8,0,0,0"
+                                    FontSize="12"
+                                    Text="Поиск:" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Margin="8,0,8,0"
+                                    HorizontalAlignment="Right"
+                                    FontSize="12"
+                                    Text="{Binding MatchesCount}" />
+                            </Grid>
 
-                            <TextBlock
-                                Margin="8,0,0,0"
-                                FontSize="12"
-                                Text="Поиск:" />
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -178,8 +191,8 @@
                             <MenuItem
                                 Command="{Binding ReadFileCommand}"
                                 CommandParameter="True"
-                                Header="Обновить" 
-                                IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBooleanConverter}}"/>
+                                Header="Обновить"
+                                IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBooleanConverter}}" />
                         </ContextMenu>
                     </TreeView.ContextMenu>
                     <TreeView.ItemsPanel>

@@ -72,12 +72,15 @@ namespace JsonViewer
             }
         }
 
-        public static JsonItem GetFilteredItem(this JsonItem original, JsonItem current, string filter, bool showAll)
+        public static FilterResponse GetFilteredItem(this JsonItem original, JsonItem current, string filter, bool showAll)
         {
+            var result = new FilterResponse();
             if (string.IsNullOrEmpty(filter))
             {
                 var clone = original.DeepCopy();
-                var filteredList = current.ToList().Where(o => o.IsMatch);
+                var currentList = current.ToList();
+                var filteredList = currentList.Where(o => o.IsMatch);
+                var selectedItem = currentList.FirstOrDefault(o => o.IsSelected);
                 var oroginalsList = clone.ToList();
                 foreach (var filteredItem in filteredList)
                 {
@@ -92,14 +95,17 @@ namespace JsonViewer
                     }
                     oItem.IsExpanded = false;
                 }
-                return clone;
+                result.Selected = selectedItem;
+                result.Result = clone;
+                return result;
             }
             else
             {
                 var clone = original.DeepCopy();
-                PrepareFilterItems(clone, filter);
+                PrepareFilterItems(clone, filter, ref result);
                 FilterItems(clone, showAll);
-                return clone;
+                result.Result = clone;
+                return result;
             }
         }          
 
@@ -147,10 +153,11 @@ namespace JsonViewer
             }
         }
 
-        private static void PrepareFilterItems(JsonItem root, string filter)
+        private static void PrepareFilterItems(JsonItem root, string filter, ref FilterResponse result)
         {
             if (!string.IsNullOrEmpty(root.Name) && (root.Name.ContainsIgnoreCase(filter) || root.Value.ContainsIgnoreCase(filter)))
             {
+                result.Matches.Add(root);
                 root.IsMatch = true;
                 root.SetParentsState((o) =>
                 {
@@ -167,8 +174,16 @@ namespace JsonViewer
             {
                 root.IsVisible = true;
             }
+            if (root.IsSelected)
+            {
+                result.Selected = root;
+            }
             foreach (var node in root.Nodes)
             {
+                if (node.IsSelected)
+                {
+                    result.Selected = node;
+                }
                 node.IsMatch = node.Name.ContainsIgnoreCase(filter) || root.Value.ContainsIgnoreCase(filter);
                 if (node.IsMatch)
                 {
@@ -179,7 +194,7 @@ namespace JsonViewer
                     });
                     node.IsExpanded = false;
                 }
-                PrepareFilterItems(node, filter);
+                PrepareFilterItems(node, filter, ref result);
             }
         }
 

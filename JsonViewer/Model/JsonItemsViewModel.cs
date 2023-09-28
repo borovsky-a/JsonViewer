@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using JsonViewer.Service;
 using Microsoft.Win32;
+using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,6 +23,7 @@ namespace JsonViewer.Model
         private bool _showAll = true;
         private ItemsControl _view;
         private bool _isLoading;
+        private string _matchesCount;
 
         public JsonItemsViewModel()
         {
@@ -86,6 +88,12 @@ namespace JsonViewer.Model
             set => SetProperty(ref _maxIndex, value);
         }
 
+        public string MatchesCount
+        {
+            get => _matchesCount;
+            set => SetProperty(ref _matchesCount, value);
+        }
+
         public bool ShowAll
         {
             get => _showAll;
@@ -131,7 +139,9 @@ namespace JsonViewer.Model
 
         private void FilterExecute()
         {
-            Root = Original.GetFilteredItem(Root, Filter, ShowAll);
+            var response = Original.GetFilteredItem(Root, Filter, ShowAll);
+            Root = response.Result;
+            MatchesCount = response.Matches.Any() ? response.Matches.Count.ToString() : "";            
         }
 
         private async Task ReadFileCommandExecute(string refresh)
@@ -143,6 +153,7 @@ namespace JsonViewer.Model
             }
             IsLoading = true;
             FilePath = filePath;
+    
             await Task.Run(async () =>
             {
                 var response = await
@@ -157,7 +168,7 @@ namespace JsonViewer.Model
                 }
                 MaxIndex = response.MaxIndex;
             });
-            IsLoading = false;            
+            IsLoading = false;      
         }
 
         private bool TryGetFilePath(bool refresh, out string filePath)
@@ -199,7 +210,10 @@ namespace JsonViewer.Model
                 case nameof(Original):
                     {
                         Root = Original;
-                        Filter = "";
+                        if (!string.IsNullOrEmpty(Filter))
+                        {
+                            FilterExecute();
+                        }
                         break;
                     }
                 case nameof(Filter):

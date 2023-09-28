@@ -10,10 +10,10 @@ namespace JsonViewer.Service
     public sealed class JsonViewerManager
     {
         private int _count;
-        public async Task<JsonReaderResponse> ReadJson(string path)
+        public async Task<ReaderResponse> ReadJson(string path)
         {
             _count = 0;
-            var response = new JsonReaderResponse();
+            var response = new ReaderResponse();
             if (string.IsNullOrEmpty(path))
             {
                 return response.WithError("Не указан путь к файлу.");
