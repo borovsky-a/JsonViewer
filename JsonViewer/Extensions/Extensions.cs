@@ -72,7 +72,7 @@ namespace JsonViewer
             }
         }
 
-        public static FilterResponse GetFilteredItem(this JsonItem original, JsonItem current, string filter, bool showAll)
+        public static FilterResponse GetFilteredItem(this JsonItem original, string filter)
         {
             var result = new FilterResponse();
             if (string.IsNullOrEmpty(filter))
@@ -84,7 +84,7 @@ namespace JsonViewer
             {
                 var clone = original.DeepCopy();
                 PrepareFilterItems(clone, filter, ref result);
-                FilterItems(clone, showAll);
+                FilterItems(clone);
                 result.Result = clone;
                 return result;
             }
@@ -179,21 +179,18 @@ namespace JsonViewer
             }
         }
 
-        private static void FilterItems(JsonItem root, bool showAll)
+        private static void FilterItems(JsonItem root)
         {
             if (!root.IsVisible)
             {
-                if (!showAll)
-                {
-                    root.Nodes.Clear();
-                }
+                root.Nodes.Clear();
                 return;
             }
 
-            var nodes = showAll ? root.Nodes : root.Nodes.Where(o => o.IsVisible).ToList();
+            var nodes = root.Nodes.Where(o => o.IsVisible).ToList();
             foreach (var node in nodes)
             {
-                FilterItems(node, showAll);
+                FilterItems(node);
             }
             root.Nodes = nodes;
         }

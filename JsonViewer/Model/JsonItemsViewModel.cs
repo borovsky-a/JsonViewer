@@ -13,6 +13,7 @@ namespace JsonViewer.Model
 {
     public sealed class JsonItemsViewModel : ObservableObject
     {
+        private int _rootCount;
         private List<JsonItem> _originalItemsArray;
         private readonly JsonViewerManager _jsonReaderProcessor;
         private JsonItem _rootItem;
@@ -22,7 +23,6 @@ namespace JsonViewer.Model
         private string _filter;
         private JsonItem _original;
         private int _maxIndex;
-        private bool _showAll;
         private ItemsControl _view;
         private bool _isLoading;
         private string _matchesCount;
@@ -38,6 +38,17 @@ namespace JsonViewer.Model
 
         public IAsyncRelayCommand ReadFileCommand =>
             new AsyncRelayCommand<string>(ReadFileCommandExecute);
+
+        public IAsyncRelayCommand FilterCommand =>
+            new AsyncRelayCommand(() =>
+            {
+                IsLoading = true;
+                return Task.Run(() =>
+                {
+                    OnFilterExecute();
+                    IsLoading = false;
+                });
+            });
 
         public IRelayCommand ExpandCommand =>
             new RelayCommand(() =>
@@ -69,9 +80,6 @@ namespace JsonViewer.Model
             OnPropertyChanged(nameof(Root));
         });
 
-        public IRelayCommand FilterCommand =>
-            new RelayCommand(OnFilterExecute);
-
         public string Filter
         {
             get => _filter;
@@ -100,12 +108,6 @@ namespace JsonViewer.Model
         {
             get => _matchesCount;
             set => SetProperty(ref _matchesCount, value);
-        }
-
-        public bool ShowAll
-        {
-            get => _showAll;
-            set => SetProperty(ref _showAll, value);
         }
 
         public bool IsLoading
@@ -146,12 +148,11 @@ namespace JsonViewer.Model
            !IsLoading;
 
         public bool CanNavigate =>
-            CanExecute &&
-            !string.IsNullOrEmpty(Filter);
+            CanExecute && _rootCount > 0 && _rootCount < 1200000 && !string.IsNullOrEmpty(Filter);
 
         private void FilterExecute()
         {
-            var response = Original.GetFilteredItem(Root, Filter, ShowAll);
+            var response = Original.GetFilteredItem(Filter);
             Root = response.Result;
             MatchesCount = response.Matches.Any() ? response.Matches.Count.ToString() : (string.IsNullOrEmpty(Filter) ? "" : "0");
         }
@@ -235,9 +236,9 @@ namespace JsonViewer.Model
                         Filter = null;
                         break;
                     }
-                case nameof(ShowAll):
+                case nameof(Root):
                     {
-                        OnFilterExecute();
+                        _rootCount = Root == null ? 0 : Root.ToList().Count;
                         break;
                     }
                 case nameof(IsLoading):
@@ -248,7 +249,7 @@ namespace JsonViewer.Model
                     }
                 case nameof(Current):
                     {
-                        if(Current == null)
+                        if (Current == null)
                         {
                             return;
                         }

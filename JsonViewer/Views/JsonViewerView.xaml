@@ -126,7 +126,7 @@
                                     Grid.Column="0"
                                     Margin="4,4,0,4"
                                     IsEnabled="{Binding CanExecute}"
-                                    Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged, Delay=1000}">
+                                    Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}">
                                     <TextBox.InputBindings>
                                         <KeyBinding
                                             Command="{Binding FilterCommand}"
@@ -154,14 +154,7 @@
                                     Content="&#129035;"
                                     FontSize="15"
                                     IsEnabled="{Binding CanNavigate}" />
-                            </Grid>
-                            <CheckBox
-                                Margin="8,8,4,4"
-                                FontSize="12"
-                                IsChecked="{Binding ShowAll, Mode=TwoWay, Delay=1000}"
-                                IsEnabled="{Binding CanExecute}">
-                                <TextBlock VerticalAlignment="Bottom" Text="Отображать все" />
-                            </CheckBox>
+                            </Grid>                          
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Margin="8,8,0,0" Text="Количество строк:" />
                                 <TextBlock Margin="8,8,0,0" Text="{Binding MaxIndex}" />
@@ -195,11 +188,6 @@
                             </Style>
                         </TreeView.ItemContainerStyle>
                     </TreeView>
-                    <!--<TextBox
-                        Grid.Row="1"
-                        IsReadOnly="True"
-                        Text="{Binding Current.Value}"
-                        TextWrapping="Wrap" />-->
                 </Grid>
             </Border>
             <GridSplitter
