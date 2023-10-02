@@ -162,11 +162,37 @@
                         </StackPanel>
                         <TextBlock Margin="8,8,0,0" Text="Значение:" />
                     </StackPanel>
-                    <TextBox
+                    <TreeView
+                        Grid.Row="1"
+                        ItemsSource="{Binding RootValue.Nodes}"
+                        VirtualizingPanel.IsVirtualizing="true">
+                        <TreeView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <controls:VirtualizingStackPanelEx />
+                            </ItemsPanelTemplate>
+                        </TreeView.ItemsPanel>
+                        <TreeView.ItemTemplate>
+                            <HierarchicalDataTemplate ItemsSource="{Binding Nodes}">
+                                <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, Converter={StaticResource DisplayNodeValueConverter}}" />
+                            </HierarchicalDataTemplate>
+                        </TreeView.ItemTemplate>
+                        <TreeView.ItemContainerStyle>
+                            <Style TargetType="TreeViewItem">
+                                <Setter Property="ItemsPanel">
+                                    <Setter.Value>
+                                        <ItemsPanelTemplate>
+                                            <controls:VirtualizingStackPanelEx />
+                                        </ItemsPanelTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </TreeView.ItemContainerStyle>
+                    </TreeView>
+                    <!--<TextBox
                         Grid.Row="1"
                         IsReadOnly="True"
                         Text="{Binding Current.Value}"
-                        TextWrapping="Wrap" />
+                        TextWrapping="Wrap" />-->
                 </Grid>
             </Border>
             <GridSplitter
@@ -234,11 +260,6 @@
                             <Setter Property="IsSelected" Value="{Binding IsSelected}" />
                             <Setter Property="IsExpanded" Value="{Binding IsExpanded}" />
                             <Setter Property="BorderThickness" Value="0" />
-                            <Style.Triggers>
-                                <Trigger Property="IsSelected" Value="True">
-                                    <Setter Property="Background" Value="red" />
-                                </Trigger>
-                            </Style.Triggers>
                             <Style.Resources>
                                 <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
                                 <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent" />

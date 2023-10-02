@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using JsonViewer.Service;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,13 +21,15 @@ namespace JsonViewer.Model
         private string _filter;
         private JsonItem _original;
         private int _maxIndex;
-        private bool _showAll = true;
+        private bool _showAll;
         private ItemsControl _view;
         private bool _isLoading;
         private string _matchesCount;
+        private JsonItem _rootValueItem;
 
         public JsonItemsViewModel()
         {
+            _rootValueItem = new JsonItem();
             _rootItem = _original = new JsonItem();
             _jsonReaderProcessor = new JsonViewerManager();
         }
@@ -117,7 +120,11 @@ namespace JsonViewer.Model
             get => _rootItem;
             set => SetProperty(ref _rootItem, value);
         }
-
+        public JsonItem RootValue
+        {
+            get => _rootValueItem;
+            set => SetProperty(ref _rootValueItem, value);
+        }
         public JsonItem Current
         {
             get => _currentItem;
@@ -231,6 +238,11 @@ namespace JsonViewer.Model
                     {
                         OnPropertyChanged(nameof(CanNavigate));
                         OnPropertyChanged(nameof(CanExecute));
+                        break;
+                    }
+                case nameof(Current):
+                    {
+                        RootValue = new JsonItem { Nodes = new List<JsonItem> { Current } };
                         break;
                     }
                 default:
