@@ -77,26 +77,7 @@ namespace JsonViewer
             var result = new FilterResponse();
             if (string.IsNullOrEmpty(filter))
             {
-                var clone = original.DeepCopy();
-                var currentList = current.ToList();
-                var filteredList = currentList.Where(o => o.IsMatch);
-                var selectedItem = currentList.FirstOrDefault(o => o.IsSelected);
-                var oroginalsList = clone.ToList();
-                foreach (var filteredItem in filteredList)
-                {
-                    var oItem = oroginalsList.FirstOrDefault(o => o.Index == filteredItem.Index);
-                    if (oItem != null)
-                    {
-                        oItem.SetParentsState((o) =>
-                        {
-                            o.IsVisible = true;
-                            o.IsExpanded = true;
-                        });
-                    }
-                    oItem.IsExpanded = false;
-                }
-                result.Selected = selectedItem;
-                result.Result = clone;
+                result.Result = original;
                 return result;
             }
             else

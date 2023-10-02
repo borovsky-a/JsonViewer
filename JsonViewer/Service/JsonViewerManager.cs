@@ -1,4 +1,5 @@
 ﻿using JsonViewer.Model;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
@@ -67,7 +68,10 @@ namespace JsonViewer.Service
             }             
             for (int i = 0; i < jArray.Count; i++)
             {
-                ProcessToken(jArray[i], $"[{i}]", item);
+                var jToken = jArray[i];
+                var desk = (jToken is JArray) || (jToken is JValue) ? "" : ": " + jToken?.ToString(Formatting.None);
+            
+                ProcessToken(jToken, $"[{i}]{desk}", item);
             }
             return item;
         }

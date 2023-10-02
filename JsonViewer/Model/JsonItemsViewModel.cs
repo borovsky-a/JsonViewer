@@ -232,10 +232,7 @@ namespace JsonViewer.Model
                     {
                         _originalItemsArray = Original.ToList();
                         Root = Original;
-                        if (!string.IsNullOrEmpty(Filter))
-                        {
-                            FilterExecute();
-                        }
+                        Filter = null;
                         break;
                     }
                 case nameof(ShowAll):
