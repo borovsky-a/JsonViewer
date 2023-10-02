@@ -53,9 +53,9 @@
         </Grid>
         <Grid Grid.Row="1" Margin="0,0,0,8">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="2*" />
                 <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Border
                 Grid.Row="0"
@@ -73,26 +73,21 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                        </Grid>
-                        <Button
-                            Grid.Column="2"
-                            Command="{Binding ReadFileCommand}"
-                            CommandParameter="False"
-                            Content="Выбор файла"
-                            IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBooleanConverter}}" />
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <Button
                                 Grid.Column="0"
+                                Command="{Binding ReadFileCommand}"
+                                CommandParameter="False"
+                                Content="Выбор"
+                                IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBooleanConverter}}" />
+                            <Button
+                                Grid.Column="1"
                                 Command="{Binding ExpandCommand}"
                                 Content="Развернуть"
                                 IsEnabled="{Binding CanExecute}" />
                             <Button
-                                Grid.Column="1"
+                                Grid.Column="2"
                                 Command="{Binding CollapseCommand}"
                                 Content="Свернуть"
                                 IsEnabled="{Binding CanExecute}" />
@@ -110,7 +105,7 @@
                                     Text="Поиск:" />
                                 <TextBlock
                                     Grid.Column="1"
-                                    Margin="8,0,8,0"
+                                    Margin="8,0,8,2"
                                     HorizontalAlignment="Right"
                                     FontSize="12"
                                     Text="{Binding MatchesCount}" />
@@ -119,6 +114,7 @@
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="24" />
                                     <ColumnDefinition Width="24" />
                                     <ColumnDefinition Width="28" />
                                 </Grid.ColumnDefinitions>
@@ -138,6 +134,16 @@
                                     Grid.Column="1"
                                     Width="20"
                                     MinWidth="0"
+                                    Margin="2,5.5,0,5.5"
+                                    Padding="0"
+                                    Command="{Binding FilterCommand}"
+                                    Content="&#128269;"
+                                    FontSize="15"
+                                    IsEnabled="{Binding CanExecute}" />
+                                <Button
+                                    Grid.Column="2"
+                                    Width="20"
+                                    MinWidth="0"
                                     Margin="4,5.5,0,5.5"
                                     Padding="0"
                                     Command="{Binding GoPrevCommand}"
@@ -145,7 +151,7 @@
                                     FontSize="15"
                                     IsEnabled="{Binding CanNavigate}" />
                                 <Button
-                                    Grid.Column="2"
+                                    Grid.Column="3"
                                     Width="20"
                                     MinWidth="0"
                                     Margin="0,5.5,0,5.5"
@@ -154,7 +160,7 @@
                                     Content="&#129035;"
                                     FontSize="15"
                                     IsEnabled="{Binding CanNavigate}" />
-                            </Grid>                          
+                            </Grid>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Margin="8,8,0,0" Text="Количество строк:" />
                                 <TextBlock Margin="8,8,0,0" Text="{Binding MaxIndex}" />
@@ -166,11 +172,23 @@
                         Grid.Row="1"
                         ItemsSource="{Binding RootValue.Nodes}"
                         VirtualizingPanel.IsVirtualizing="true">
+                        <e:Interaction.Behaviors>
+                            <behaviours:BindableSelectedItemBehavior SelectedItem="{Binding CurrentValue, Mode=TwoWay}" />
+                        </e:Interaction.Behaviors>
                         <TreeView.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <controls:VirtualizingStackPanelEx />
                             </ItemsPanelTemplate>
                         </TreeView.ItemsPanel>
+                        <TreeView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem
+                                    Command="{Binding ClipboardCopyCommand}"
+                                    CommandParameter="True"
+                                    Header="Копирповать"
+                                    IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBooleanConverter}}" />
+                            </ContextMenu>
+                        </TreeView.ContextMenu>
                         <TreeView.ItemTemplate>
                             <HierarchicalDataTemplate ItemsSource="{Binding Nodes}">
                                 <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext, Converter={StaticResource DisplayNodeValueConverter}}" />

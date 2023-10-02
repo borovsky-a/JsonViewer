@@ -2,11 +2,11 @@
 using CommunityToolkit.Mvvm.Input;
 using JsonViewer.Service;
 using Microsoft.Win32;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace JsonViewer.Model
@@ -27,6 +27,7 @@ namespace JsonViewer.Model
         private bool _isLoading;
         private string _matchesCount;
         private JsonItem _rootValueItem;
+        private JsonItem _currentValue;
 
         public JsonItemsViewModel()
         {
@@ -50,21 +51,31 @@ namespace JsonViewer.Model
                 });
             });
 
-        public IRelayCommand ExpandCommand =>
-            new RelayCommand(() =>
+        public IAsyncRelayCommand ExpandCommand =>
+            new AsyncRelayCommand(() =>
         {
-            var clone = Root.DeepCopy();
-            CollapseCommandExecute(clone, true);
-            Root = clone;
+            IsLoading = true;
+            return Task.Run(() =>
+            {
+                var clone = Root.DeepCopy();
+                CollapseCommandExecute(clone, true);
+                Root = clone;
+                IsLoading = false;
+            });
         });
 
-        public IRelayCommand CollapseCommand =>
-            new RelayCommand(() =>
-        {
-            var clone = Root.DeepCopy();
-            CollapseCommandExecute(clone, false);
-            Root = clone;
-        });
+        public IAsyncRelayCommand CollapseCommand =>
+            new AsyncRelayCommand(() =>
+            {
+                IsLoading = true;
+                return Task.Run(() =>
+                {
+                    var clone = Root.DeepCopy();
+                    CollapseCommandExecute(clone, false);
+                    Root = clone;
+                    IsLoading = false;
+                });
+            });
 
         public IRelayCommand GoNextCommand =>
             new RelayCommand(() =>
@@ -79,6 +90,17 @@ namespace JsonViewer.Model
             View.GoPrev(Root);
             OnPropertyChanged(nameof(Root));
         });
+
+        public IRelayCommand ClipboardCopyCommand =>
+           new RelayCommand<object>((parameter) =>
+           {
+               if (CurrentValue == null)
+               {
+                   return;
+               }
+               var stringValue = CurrentValue.ItemType == JsonItemType.Value ? CurrentValue.Name + ": " + CurrentValue.Value : CurrentValue.Name;
+               Clipboard.SetText(stringValue);
+           });
 
         public string Filter
         {
@@ -136,6 +158,11 @@ namespace JsonViewer.Model
         {
             get => _currentItem;
             set => SetProperty(ref _currentItem, value);
+        }
+        public JsonItem CurrentValue
+        {
+            get => _currentValue;
+            set => SetProperty(ref _currentValue, value);
         }
 
         public ItemsControl View
