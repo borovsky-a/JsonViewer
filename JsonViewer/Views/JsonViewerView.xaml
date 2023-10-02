@@ -126,7 +126,14 @@
                                     Grid.Column="0"
                                     Margin="4,4,0,4"
                                     IsEnabled="{Binding CanExecute}"
-                                    Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged, Delay=1000}" />
+                                    Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged, Delay=1000}">
+                                    <TextBox.InputBindings>
+                                        <KeyBinding
+                                            Command="{Binding FilterCommand}"
+                                            CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TextBox}}}"
+                                            Gesture="Enter" />
+                                    </TextBox.InputBindings>
+                                </TextBox>
                                 <Button
                                     Grid.Column="1"
                                     Width="20"

@@ -13,6 +13,7 @@ namespace JsonViewer.Model
 {
     public sealed class JsonItemsViewModel : ObservableObject
     {
+        private List<JsonItem> _originalItemsArray;
         private readonly JsonViewerManager _jsonReaderProcessor;
         private JsonItem _rootItem;
         private JsonItem _currentItem;
@@ -29,6 +30,7 @@ namespace JsonViewer.Model
 
         public JsonItemsViewModel()
         {
+            _originalItemsArray = new List<JsonItem> { };
             _rootValueItem = new JsonItem();
             _rootItem = _original = new JsonItem();
             _jsonReaderProcessor = new JsonViewerManager();
@@ -66,6 +68,9 @@ namespace JsonViewer.Model
             View.GoPrev(Root);
             OnPropertyChanged(nameof(Root));
         });
+
+        public IRelayCommand FilterCommand =>
+            new RelayCommand(OnFilterExecute);
 
         public string Filter
         {
@@ -209,6 +214,15 @@ namespace JsonViewer.Model
             }
         }
 
+        private void OnFilterExecute()
+        {
+            if (Original != null)
+            {
+                FilterExecute();
+            }
+            OnPropertyChanged(nameof(CanNavigate));
+            OnPropertyChanged(nameof(CanExecute));
+        }
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
         {
             base.OnPropertyChanged(e);
@@ -216,6 +230,7 @@ namespace JsonViewer.Model
             {
                 case nameof(Original):
                     {
+                        _originalItemsArray = Original.ToList();
                         Root = Original;
                         if (!string.IsNullOrEmpty(Filter))
                         {
@@ -223,15 +238,9 @@ namespace JsonViewer.Model
                         }
                         break;
                     }
-                case nameof(Filter):
                 case nameof(ShowAll):
                     {
-                        if (Original != null)
-                        {
-                            FilterExecute();
-                        }
-                        OnPropertyChanged(nameof(CanNavigate));
-                        OnPropertyChanged(nameof(CanExecute));
+                        OnFilterExecute();
                         break;
                     }
                 case nameof(IsLoading):
@@ -242,7 +251,12 @@ namespace JsonViewer.Model
                     }
                 case nameof(Current):
                     {
-                        RootValue = new JsonItem { Nodes = new List<JsonItem> { Current } };
+                        if(Current == null)
+                        {
+                            return;
+                        }
+                        var current = _originalItemsArray.FirstOrDefault(o => o.Index == Current.Index);
+                        RootValue = new JsonItem { Nodes = new List<JsonItem> { current } };
                         break;
                     }
                 default:
