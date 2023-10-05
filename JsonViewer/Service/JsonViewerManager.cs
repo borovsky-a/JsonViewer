@@ -98,19 +98,24 @@ namespace JsonViewer.Service
                 {
                     return response.WithError("Не указан путь к файлу.");
                 }
-                var textValue = File.ReadAllText(path);
-                var jsonValue = JToken.Parse(textValue);      
-                if(jsonValue is JArray jArray)
+
+                var jToken = default(JToken);
+                using (var tReader = File.OpenText(path))
+                using (var jReader = new JsonTextReader(tReader))
+                {
+                    jToken = await JToken.LoadAsync(jReader);                     
+                }
+                if (jToken is JArray jArray)
                 {
                     response.Value = ProcessArray(jArray, "root", null);
                 }
-                else if(jsonValue is JObject jObject)
+                else if (jToken is JObject jObject)
                 {
                     response.Value = ProcessObject(jObject, "root", null);
-                }                       
+                }
                 response.MaxIndex = _count;
                 response.ItemsList = _items;
-                return await Task.FromResult(response);
+                return response;
             }
             catch (Exception ex)
             {
