@@ -103,12 +103,6 @@
                                     Margin="8,0,0,0"
                                     FontSize="12"
                                     Text="Поиск:" />
-                                <TextBlock
-                                    Grid.Column="1"
-                                    Margin="8,0,8,2"
-                                    HorizontalAlignment="Right"
-                                    FontSize="12"
-                                    Text="{Binding MatchesCount}" />
                             </Grid>
 
                             <Grid>
@@ -163,17 +157,24 @@
                             </Grid>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Margin="8,8,0,0" Text="Количество строк:" />
-                                <TextBlock Margin="8,8,0,0" Text="{Binding MaxIndex}" />
+                                <TextBlock Margin="4,8,0,0">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0} из {1}">
+                                            <Binding Path="MatchesCount" />
+                                            <Binding Path="MaxIndex" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
                             </StackPanel>
                         </StackPanel>
                         <TextBlock Margin="8,8,0,0" Text="Значение:" />
                     </StackPanel>
                     <TreeView
                         Grid.Row="1"
-                        ItemsSource="{Binding RootValue.Nodes}"
+                        ItemsSource="{Binding CurrentValue.Nodes}"
                         VirtualizingPanel.IsVirtualizing="true">
                         <e:Interaction.Behaviors>
-                            <behaviours:BindableSelectedItemBehavior SelectedItem="{Binding CurrentValue, Mode=TwoWay}" />
+                            <behaviours:BindableSelectedItemBehavior SelectedItem="{Binding CurrentPreviewItem, Mode=TwoWay}" />
                         </e:Interaction.Behaviors>
                         <TreeView.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -222,7 +223,7 @@
                 BorderThickness="1">
                 <TreeView
                     x:Name="tree"
-                    ItemsSource="{Binding Root.Nodes}"
+                    ItemsSource="{Binding Original.Nodes}"
                     VirtualizingPanel.IsVirtualizing="true">
                     <e:Interaction.Behaviors>
                         <behaviours:BindableSelectedItemBehavior SelectedItem="{Binding Current, Mode=TwoWay}" />
@@ -270,7 +271,7 @@
                                     </ItemsPanelTemplate>
                                 </Setter.Value>
                             </Setter>
-                            <Setter Property="Visibility" Value="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                            <Setter Property="Visibility" Value="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
                             <Setter Property="IsSelected" Value="{Binding IsSelected}" />
                             <Setter Property="IsExpanded" Value="{Binding IsExpanded}" />
                             <Setter Property="BorderThickness" Value="0" />

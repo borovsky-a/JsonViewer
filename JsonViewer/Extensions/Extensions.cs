@@ -61,14 +61,13 @@ namespace JsonViewer
         }
 
         public static void SetParentsState(this JsonItem node, Action<JsonItem> action)
-        {
-            action(node);
-            var parent = node.Parent;
+        { 
+            var parent = node?.Parent;
             while (parent != null)
             {
                 action(parent);
                 parent = parent.Parent;
-            }
+            }              
         }               
 
         public static void SelectItem(this ItemsControl container,
@@ -114,85 +113,7 @@ namespace JsonViewer
                     treeViewItem.BringIntoView();
                 }
             }
-        }
-        public static FilterResponse GetFilteredItem(this JsonItem original,  string filter)
-        {
-            var result = new FilterResponse();
-            if (string.IsNullOrEmpty(filter))
-            {
-                result.Result = original;
-                return result;
-            }
-            else
-            {
-                var clone = original.DeepCopy();
-                PrepareFilterItems(clone, filter, ref result);
-                //FilterItems(clone);
-                result.Result = clone;
-                return result;
-            }
-        }
-
-        private static void PrepareFilterItems(JsonItem root, string filter, ref FilterResponse result)
-        {
-            if (!string.IsNullOrEmpty(root.Name) && (root.Name.ContainsIgnoreCase(filter) || root.Value.ContainsIgnoreCase(filter)))
-            {
-                result.Matches.Add(root);
-                root.IsMatch = true;
-                root.SetParentsState((o) =>
-                {
-                    o.IsVisible = true;
-                    o.IsExpanded = true;
-                });
-                root.IsExpanded = false;
-            }
-            else
-            {
-                root.IsVisible = false;
-            }
-            if (root.Name == "root")
-            {
-                root.IsVisible = true;
-            }
-            if (root.IsSelected)
-            {
-                result.Selected = root;
-            }
-            foreach (var node in root.Nodes)
-            {
-                if (node.IsSelected)
-                {
-                    result.Selected = node;
-                }
-                node.IsMatch = node.Name.ContainsIgnoreCase(filter) || root.Value.ContainsIgnoreCase(filter);
-                if (node.IsMatch)
-                {
-                    node.SetParentsState((o) =>
-                    {
-                        o.IsVisible = true;
-                        o.IsExpanded = true;
-                    });
-                    node.IsExpanded = false;
-                }
-                PrepareFilterItems(node, filter, ref result);
-            }
-        }
-
-        private static void FilterItems(JsonItem root)
-        {
-            if (!root.IsVisible)
-            {
-                root.Nodes.Clear();
-                return;
-            }
-
-            var nodes = root.Nodes.Where(o => o.IsVisible).ToList();
-            foreach (var node in nodes)
-            {
-                FilterItems(node);
-            }
-            root.Nodes = nodes;
-        }
+        }            
 
         private static JsonItem GetPrevItem(IEnumerable<JsonItem> items, JsonItem current)
         {

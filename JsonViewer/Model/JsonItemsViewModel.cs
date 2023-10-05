@@ -13,11 +13,7 @@ namespace JsonViewer.Model
 {
     public sealed class JsonItemsViewModel : ObservableObject
     {
-        private int _rootCount;
-        private List<JsonItem> _originalItemsList;
-        private List<JsonItem> _rootItemsList;
         private readonly JsonViewerManager _jsonReaderProcessor;
-        private JsonItem _rootItem;
         private JsonItem _currentItem;
         private string _filePath;
         private string _error;
@@ -26,15 +22,12 @@ namespace JsonViewer.Model
         private int _maxIndex;
         private ItemsControl _view;
         private bool _isLoading;
-        private string _matchesCount;
-        private JsonItem _rootValueItem;
+        private int _matchesCount;
         private JsonItem _currentValue;
+        private JsonItem _currentPreviewItem;
 
         public JsonItemsViewModel()
         {
-            _originalItemsList = _rootItemsList = new List<JsonItem>();
-            _rootValueItem = new JsonItem();
-            _rootItem = _original = new JsonItem();
             _jsonReaderProcessor = new JsonViewerManager();
         }
 
@@ -58,9 +51,7 @@ namespace JsonViewer.Model
             IsLoading = true;
             return Task.Run(() =>
             {
-                var clone = Root.DeepCopy();
-                CollapseCommandExecute(clone, true);
-                Root = clone;
+                _jsonReaderProcessor.ExpandItems();
                 IsLoading = false;
             });
         });
@@ -71,35 +62,42 @@ namespace JsonViewer.Model
                 IsLoading = true;
                 return Task.Run(() =>
                 {
-                    var clone = Root.DeepCopy();
-                    CollapseCommandExecute(clone, false);
-                    Root = clone;
+                    _jsonReaderProcessor.CollapseItems();
                     IsLoading = false;
                 });
             });
 
-        public IRelayCommand GoNextCommand =>
-            new RelayCommand(() =>
-        {
-            View.GoNext(_rootItemsList.Where(o => o.IsMatch));
-            OnPropertyChanged(nameof(Root));
-        });
+        public IAsyncRelayCommand GoNextCommand =>
+            new AsyncRelayCommand(() =>
+            {
+                IsLoading = true;
+                return Task.Run(() =>
+                {
+                    View.GoNext(_jsonReaderProcessor.GetMatchItems());
+                    IsLoading = false;
+                });
+            });
 
-        public IRelayCommand GoPrevCommand =>
-            new RelayCommand<object>((parameter) =>
-        {
-            View.GoPrev(_rootItemsList.Where(o=> o.IsMatch));
-            OnPropertyChanged(nameof(Root));
-        });
+        public IAsyncRelayCommand GoPrevCommand =>
+            new AsyncRelayCommand<object>((parameter) =>
+            {
+                IsLoading = true;
+                return Task.Run(() =>
+                {
+
+                    View.GoPrev(_jsonReaderProcessor.GetMatchItems());
+                    IsLoading = false;
+                });
+            });
 
         public IRelayCommand ClipboardCopyCommand =>
            new RelayCommand<object>((parameter) =>
            {
-               if (CurrentValue == null)
+               if (CurrentPreviewItem == null)
                {
                    return;
                }
-               var stringValue = CurrentValue.ItemType == JsonItemType.Value ? CurrentValue.Name + ": " + CurrentValue.Value : CurrentValue.Name;
+               var stringValue = CurrentPreviewItem.ItemType == JsonItemType.Value ? CurrentPreviewItem.Name + ": " + CurrentPreviewItem.Value : CurrentPreviewItem.Name;
                Clipboard.SetText(stringValue);
            });
 
@@ -127,7 +125,7 @@ namespace JsonViewer.Model
             set => SetProperty(ref _maxIndex, value);
         }
 
-        public string MatchesCount
+        public int MatchesCount
         {
             get => _matchesCount;
             set => SetProperty(ref _matchesCount, value);
@@ -145,16 +143,6 @@ namespace JsonViewer.Model
             set => SetProperty(ref _original, value);
         }
 
-        public JsonItem Root
-        {
-            get => _rootItem;
-            set => SetProperty(ref _rootItem, value);
-        }
-        public JsonItem RootValue
-        {
-            get => _rootValueItem;
-            set => SetProperty(ref _rootValueItem, value);
-        }
         public JsonItem Current
         {
             get => _currentItem;
@@ -165,7 +153,11 @@ namespace JsonViewer.Model
             get => _currentValue;
             set => SetProperty(ref _currentValue, value);
         }
-
+        public JsonItem CurrentPreviewItem
+        {
+            get => _currentPreviewItem;
+            set => SetProperty(ref _currentPreviewItem, value);
+        }
         public ItemsControl View
         {
             get => _view;
@@ -176,13 +168,11 @@ namespace JsonViewer.Model
            !IsLoading;
 
         public bool CanNavigate =>
-            CanExecute && _rootCount > 0 && _rootCount < 1200000 && !string.IsNullOrEmpty(Filter);
+            CanExecute && _matchesCount > 0 && _matchesCount < 1200000 && !string.IsNullOrEmpty(Filter);
 
         private void FilterExecute()
         {
-            var response = Original.GetFilteredItem(Filter);
-            Root = response.Result;
-            MatchesCount = response.Matches.Any() ? response.Matches.Count.ToString() : (string.IsNullOrEmpty(Filter) ? "" : "0");
+            MatchesCount = _jsonReaderProcessor.FilteredItems(Filter);
         }
 
         private async Task ReadFileCommandExecute(string refresh)
@@ -194,7 +184,9 @@ namespace JsonViewer.Model
             }
             IsLoading = true;
             FilePath = filePath;
-
+            MatchesCount = 0;
+            MaxIndex = 0;
+            Original = new JsonItem();
             await Task.Run(async () =>
             {
                 var response = await
@@ -208,7 +200,7 @@ namespace JsonViewer.Model
                     Original = response.Value;
                 }
                 MaxIndex = response.MaxIndex;
-                _originalItemsList = response.ItemsList;
+                MatchesCount = MaxIndex;
             });
             IsLoading = false;
         }
@@ -253,6 +245,7 @@ namespace JsonViewer.Model
             OnPropertyChanged(nameof(CanNavigate));
             OnPropertyChanged(nameof(CanExecute));
         }
+
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
         {
             base.OnPropertyChanged(e);
@@ -260,22 +253,7 @@ namespace JsonViewer.Model
             {
                 case nameof(Original):
                     {
-                        Root = Original;
                         Filter = null;
-                        break;
-                    }
-                case nameof(Root):
-                    {
-                        if(Root == Original)
-                        {
-                            _rootCount = _originalItemsList.Count;
-                            _rootItemsList = _originalItemsList.ToList();
-                        }
-                        else
-                        {
-                            _rootItemsList = Root == null ? new List<JsonItem>() : Root.ToList();
-                            _rootCount = _rootItemsList.Count;
-                        }                           
                         break;
                     }
                 case nameof(IsLoading):
@@ -286,12 +264,7 @@ namespace JsonViewer.Model
                     }
                 case nameof(Current):
                     {
-                        if (Current == null)
-                        {
-                            return;
-                        }
-                        var current = _originalItemsList.FirstOrDefault(o => o.Index == Current.Index);
-                        RootValue = new JsonItem { Nodes = new List<JsonItem> { current } };
+                        CurrentValue = new JsonItem { Nodes = new List<JsonItem> { Current } };
                         break;
                     }
                 default:
