@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,9 +12,11 @@ namespace JsonViewer.Service
     public sealed class JsonViewerManager
     {
         private int _count;
+        private List<JsonItem> _items;
         public async Task<ReaderResponse> ReadJson(string path)
         {
             _count = 0;
+            _items = new List<JsonItem>();
             var response = new ReaderResponse();
             if (string.IsNullOrEmpty(path))
             {
@@ -36,6 +39,7 @@ namespace JsonViewer.Service
                     response.Value = ProcessObject(jObject, "root", null);
                 }                       
                 response.MaxIndex = _count;
+                response.ItemsList = _items;
                 return await Task.FromResult(response);
             }
             catch (Exception ex)
@@ -48,6 +52,7 @@ namespace JsonViewer.Service
         {
             var item =
                 new JsonItem { Name = name, ItemType = JsonItemType.Object, Index = Interlocked.Increment(ref _count) };
+            _items.Add(item);
             if (parent != null)
             {
                 parent.Nodes.Add(item);
@@ -62,7 +67,8 @@ namespace JsonViewer.Service
         private JsonItem ProcessArray(JArray jArray, string name, JsonItem parent)
         {
             var item = new JsonItem { Name = name, ItemType = JsonItemType.Array, Index = Interlocked.Increment(ref _count) };
-            if(parent != null)
+            _items.Add(item);
+            if (parent != null)
             {
                 parent.Nodes.Add(item);
             }             
@@ -76,11 +82,19 @@ namespace JsonViewer.Service
             return item;
         }
 
+        private JsonItem ProcessValue(JValue jValue, string name, JsonItem parent)
+        {
+            var item = new JsonItem { Name = name, Value = jValue.Value?.ToString(), ItemType = JsonItemType.Value, Index = Interlocked.Increment(ref _count) };
+            parent.Nodes.Add(item);
+            _items.Add(item);
+            return item;
+        }
+
         private void ProcessToken(JToken jToken, string name, JsonItem parent)
         {
             if (jToken is JValue jValue)
             {
-                parent.Nodes.Add(new JsonItem { Name = name, Value = jValue.Value?.ToString(), ItemType = JsonItemType.Value, Index = Interlocked.Increment(ref _count) });
+                ProcessValue(jValue, name, parent);
             }
             else if (jToken is JArray jArray)
             {

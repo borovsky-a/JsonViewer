@@ -45,20 +45,19 @@ namespace JsonViewer
             }
             return clone;
         }
-
         public static List<JsonItem> ToList(this JsonItem node)
         {
             return ToList(node, new List<JsonItem>());
-        }         
-
-        public static void GoNext(this ItemsControl container, JsonItem root)
-        {
-            SelectItem(container, root, true);
         }
 
-        public static void GoPrev(this ItemsControl container, JsonItem root)
+        public static void GoNext(this ItemsControl container, IEnumerable<JsonItem> matchItems)
         {
-            SelectItem(container, root, false);
+            SelectItem(container, matchItems, true);
+        }
+
+        public static void GoPrev(this ItemsControl container, IEnumerable<JsonItem> matchItems)
+        {
+            SelectItem(container, matchItems, false);
         }
 
         public static void SetParentsState(this JsonItem node, Action<JsonItem> action)
@@ -70,45 +69,28 @@ namespace JsonViewer
                 action(parent);
                 parent = parent.Parent;
             }
-        }
+        }               
 
-        public static FilterResponse GetFilteredItem(this JsonItem original, string filter)
+        public static void SelectItem(this ItemsControl container,
+            IEnumerable<JsonItem> matchItems, 
+            bool? next = default)
         {
-            var result = new FilterResponse();
-            if (string.IsNullOrEmpty(filter))
-            {
-                result.Result = original;
-                return result;
-            }
-            else
-            {
-                var clone = original.DeepCopy();
-                PrepareFilterItems(clone, filter, ref result);
-                FilterItems(clone);
-                result.Result = clone;
-                return result;
-            }
-        }          
-
-        public static void SelectItem(this ItemsControl container, JsonItem root, bool? next = default)
-        {
-            var items = root.ToList().Where(o => o.IsMatch).ToList();
-            var itemsCount = items.Count;
+            var itemsCount = matchItems.Count();
             if (itemsCount == 0)
             {
                 return;
             }
 
-            var currentItem = items.FirstOrDefault(o => o.IsSelected == true);
+            var currentItem = matchItems.FirstOrDefault(o => o.IsSelected == true);
             if (currentItem == null)
             {
-                currentItem = items.FirstOrDefault(o => o.IsMatch == true);
+                currentItem = matchItems.FirstOrDefault(o => o.IsMatch == true);
             }
             if (currentItem.IsSelected)
             {
                 var nextItem = next.HasValue ?  (next.Value ?
-                    GetNextItem(items, currentItem) : 
-                    GetPrevItem(items, currentItem)) : currentItem;
+                    GetNextItem(matchItems, currentItem) : 
+                    GetPrevItem(matchItems, currentItem)) : currentItem;
 
                 if(nextItem != currentItem)
                 {
@@ -131,6 +113,23 @@ namespace JsonViewer
                 {
                     treeViewItem.BringIntoView();
                 }
+            }
+        }
+        public static FilterResponse GetFilteredItem(this JsonItem original,  string filter)
+        {
+            var result = new FilterResponse();
+            if (string.IsNullOrEmpty(filter))
+            {
+                result.Result = original;
+                return result;
+            }
+            else
+            {
+                var clone = original.DeepCopy();
+                PrepareFilterItems(clone, filter, ref result);
+                FilterItems(clone);
+                result.Result = clone;
+                return result;
             }
         }
 

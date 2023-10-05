@@ -14,7 +14,8 @@ namespace JsonViewer.Model
     public sealed class JsonItemsViewModel : ObservableObject
     {
         private int _rootCount;
-        private List<JsonItem> _originalItemsArray;
+        private List<JsonItem> _originalItemsList;
+        private List<JsonItem> _rootItemsList;
         private readonly JsonViewerManager _jsonReaderProcessor;
         private JsonItem _rootItem;
         private JsonItem _currentItem;
@@ -31,7 +32,7 @@ namespace JsonViewer.Model
 
         public JsonItemsViewModel()
         {
-            _originalItemsArray = new List<JsonItem> { };
+            _originalItemsList = _rootItemsList = new List<JsonItem>();
             _rootValueItem = new JsonItem();
             _rootItem = _original = new JsonItem();
             _jsonReaderProcessor = new JsonViewerManager();
@@ -80,14 +81,14 @@ namespace JsonViewer.Model
         public IRelayCommand GoNextCommand =>
             new RelayCommand(() =>
         {
-            View.GoNext(Root);
+            View.GoNext(_rootItemsList.Where(o => o.IsMatch));
             OnPropertyChanged(nameof(Root));
         });
 
         public IRelayCommand GoPrevCommand =>
             new RelayCommand<object>((parameter) =>
         {
-            View.GoPrev(Root);
+            View.GoPrev(_rootItemsList.Where(o=> o.IsMatch));
             OnPropertyChanged(nameof(Root));
         });
 
@@ -207,6 +208,7 @@ namespace JsonViewer.Model
                     Original = response.Value;
                 }
                 MaxIndex = response.MaxIndex;
+                _originalItemsList = response.ItemsList;
             });
             IsLoading = false;
         }
@@ -258,14 +260,22 @@ namespace JsonViewer.Model
             {
                 case nameof(Original):
                     {
-                        _originalItemsArray = Original.ToList();
                         Root = Original;
                         Filter = null;
                         break;
                     }
                 case nameof(Root):
                     {
-                        _rootCount = Root == null ? 0 : Root.ToList().Count;
+                        if(Root == Original)
+                        {
+                            _rootCount = _originalItemsList.Count;
+                            _rootItemsList = _originalItemsList.ToList();
+                        }
+                        else
+                        {
+                            _rootItemsList = Root == null ? new List<JsonItem>() : Root.ToList();
+                            _rootCount = _rootItemsList.Count;
+                        }                           
                         break;
                     }
                 case nameof(IsLoading):
@@ -280,7 +290,7 @@ namespace JsonViewer.Model
                         {
                             return;
                         }
-                        var current = _originalItemsArray.FirstOrDefault(o => o.Index == Current.Index);
+                        var current = _originalItemsList.FirstOrDefault(o => o.Index == Current.Index);
                         RootValue = new JsonItem { Nodes = new List<JsonItem> { current } };
                         break;
                     }
