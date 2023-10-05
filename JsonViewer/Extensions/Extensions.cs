@@ -127,7 +127,7 @@ namespace JsonViewer
             {
                 var clone = original.DeepCopy();
                 PrepareFilterItems(clone, filter, ref result);
-                FilterItems(clone);
+                //FilterItems(clone);
                 result.Result = clone;
                 return result;
             }

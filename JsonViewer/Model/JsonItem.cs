@@ -6,14 +6,15 @@ namespace JsonViewer.Model
 {
     public sealed class JsonItem : ObservableObject
     {
+        private bool _isMatch;
         private bool _isExpanded;
         private bool _isSelected;
+        private bool _isVisible = true;
 
         public JsonItem()
         {
             Nodes = new ObservableCollection<JsonItem>();
         }
-
         public JsonItem Parent { get; set; }
 
         public ICollection<JsonItem> Nodes { get; set; }
@@ -26,9 +27,17 @@ namespace JsonViewer.Model
 
         public int Index { get; set; }
 
-        public bool IsVisible { get; set; }
+        public bool IsVisible
+        {
+            get => _isVisible;
+            set => SetProperty(ref _isVisible, value);
+        }
 
-        public bool IsMatch {  get; set; }
+        public bool IsMatch
+        {
+            get => _isMatch;
+            set => SetProperty(ref _isMatch, value);
+        }
 
         public bool IsExpanded
         {

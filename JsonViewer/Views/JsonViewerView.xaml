@@ -270,6 +270,7 @@
                                     </ItemsPanelTemplate>
                                 </Setter.Value>
                             </Setter>
+                            <Setter Property="Visibility" Value="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                             <Setter Property="IsSelected" Value="{Binding IsSelected}" />
                             <Setter Property="IsExpanded" Value="{Binding IsExpanded}" />
                             <Setter Property="BorderThickness" Value="0" />
