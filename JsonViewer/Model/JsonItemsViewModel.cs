@@ -67,27 +67,16 @@ namespace JsonViewer.Model
                 });
             });
 
-        public IAsyncRelayCommand GoNextCommand =>
-            new AsyncRelayCommand(() =>
+        public IRelayCommand GoNextCommand =>
+            new RelayCommand(() =>
             {
-                IsLoading = true;
-                return Task.Run(() =>
-                {
-                    View.GoNext(_jsonReaderProcessor.GetMatchItems());
-                    IsLoading = false;
-                });
+                View.GoNext(_jsonReaderProcessor.GetMatchItems());
             });
 
-        public IAsyncRelayCommand GoPrevCommand =>
-            new AsyncRelayCommand<object>((parameter) =>
+        public IRelayCommand GoPrevCommand =>
+            new RelayCommand<object>((parameter) =>
             {
-                IsLoading = true;
-                return Task.Run(() =>
-                {
-
-                    View.GoPrev(_jsonReaderProcessor.GetMatchItems());
-                    IsLoading = false;
-                });
+                View.GoPrev(_jsonReaderProcessor.GetMatchItems());
             });
 
         public IRelayCommand ClipboardCopyCommand =>

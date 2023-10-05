@@ -27,12 +27,18 @@ namespace JsonViewer.Service
 
         public void CollapseItems()
         {
-            _items.ForEach(o => o.IsExpanded = false);
+            for (int i = _items.Count - 1; i >= 0; i--)
+            {
+                _items[i].IsExpanded = false;
+            }
         }
 
         public void ExpandItems()
         {
-            _items.ForEach(o => o.IsExpanded = true);
+            for (int i = 0; i < _items.Count; i++)
+            {
+                _items[i].IsExpanded = true;
+            }
         }
 
         public int FilteredItems(string filter)
