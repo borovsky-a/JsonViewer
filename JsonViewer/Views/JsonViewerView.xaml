@@ -201,6 +201,18 @@
                                         </ItemsPanelTemplate>
                                     </Setter.Value>
                                 </Setter>
+                                <Setter Property="BorderThickness" Value="0" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Foreground" Value="#0300C7" />
+                                        <Setter Property="Background" Value="Transparent" />
+                                    </Trigger>
+                                </Style.Triggers>
+                                <Style.Resources>
+                                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
+                                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent" />
+                                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="Transparent" />
+                                </Style.Resources>
                             </Style>
                         </TreeView.ItemContainerStyle>
                     </TreeView>
@@ -246,8 +258,7 @@
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                                <Setter Property="Foreground" Value="blue" />
-                                                <Setter Property="FontWeight" Value="DemiBold" />
+                                                <Setter Property="Foreground" Value="#0300C7" />
                                                 <Setter Property="Background" Value="Transparent" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding IsMatch}" Value="true">
