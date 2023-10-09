@@ -24,7 +24,6 @@
         <Style TargetType="Button">
             <Setter Property="Padding" Value="4px" />
             <Setter Property="Margin" Value="1,1" />
-            <Setter Property="MinWidth" Value="80px" />
         </Style>
         <Style TargetType="TextBox">
             <Setter Property="Margin" Value="1px" />
@@ -69,29 +68,27 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <StackPanel>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
+                        <UniformGrid Columns="3">
                             <Button
                                 Grid.Column="0"
                                 Command="{Binding ReadFileCommand}"
                                 CommandParameter="False"
-                                Content="Выбор"
-                                IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBooleanConverter}}" />
+                                IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBooleanConverter}}">
+                                <TextBlock Text="Выбор" TextTrimming="CharacterEllipsis" />
+                            </Button>
                             <Button
                                 Grid.Column="1"
                                 Command="{Binding ExpandCommand}"
-                                Content="Развернуть"
-                                IsEnabled="{Binding CanExecute}" />
+                                IsEnabled="{Binding CanExecute}">
+                                <TextBlock Text="Развернуть" TextTrimming="CharacterEllipsis" />
+                            </Button>
                             <Button
                                 Grid.Column="2"
                                 Command="{Binding CollapseCommand}"
-                                Content="Свернуть"
-                                IsEnabled="{Binding CanExecute}" />
-                        </Grid>
+                                IsEnabled="{Binding CanExecute}">
+                                <TextBlock Text="Свернуть" TextTrimming="CharacterEllipsis" />
+                            </Button>
+                        </UniformGrid>
                         <StackPanel Margin="0,4,0,0">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -273,7 +270,7 @@
                             </Setter>
                             <Setter Property="Visibility" Value="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
                             <Setter Property="IsSelected" Value="{Binding IsSelected}" />
-                            <Setter Property="IsExpanded" Value="{Binding IsExpanded}" />
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                             <Setter Property="BorderThickness" Value="0" />
                             <Style.Resources>
                                 <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
