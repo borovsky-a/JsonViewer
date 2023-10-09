@@ -137,16 +137,20 @@ namespace JsonViewer.Model
             get => _currentItem;
             set => SetProperty(ref _currentItem, value);
         }
+
         public JsonItem CurrentValue
         {
             get => _currentValue;
             set => SetProperty(ref _currentValue, value);
         }
+
         public JsonItem CurrentPreviewItem
         {
             get => _currentPreviewItem;
             set => SetProperty(ref _currentPreviewItem, value);
         }
+
+
         public ItemsControl View
         {
             get => _view;

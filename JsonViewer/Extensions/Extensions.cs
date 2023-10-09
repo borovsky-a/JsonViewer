@@ -18,37 +18,7 @@ namespace JsonViewer
                 return false;
             }
             return CultureInfo.CurrentCulture.CompareInfo.IndexOf(value1, value2, CompareOptions.IgnoreCase) >= 0;
-        }
-
-        public static JsonItem DeepCopy(this JsonItem original)
-        {
-            var clone = new JsonItem
-            {
-                Index = original.Index,
-                IsExpanded = original.IsExpanded,
-                IsSelected = original.IsSelected,
-                IsVisible = original.IsVisible,
-                ItemType = original.ItemType,
-                Name = original.Name,
-                Value = original.Value,
-                Parent = original.Parent,
-                IsMatch = original.IsMatch,
-            };
-            if (clone.Parent != null)
-            {
-                clone.Parent.Nodes.Add(clone);
-            }
-            foreach (var node in original.Nodes)
-            {
-                node.Parent = clone;
-                DeepCopy(node);
-            }
-            return clone;
-        }
-        public static List<JsonItem> ToList(this JsonItem node)
-        {
-            return ToList(node, new List<JsonItem>());
-        }
+        }    
 
         public static void GoNext(this ItemsControl container, IEnumerable<JsonItem> matchItems)
         {

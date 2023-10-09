@@ -2,7 +2,8 @@
 
 namespace JsonViewer.Controls
 {
-    public class VirtualizingStackPanelEx :    VirtualizingStackPanel
+    public sealed class VirtualizingStackPanelEx :    
+        VirtualizingStackPanel
     {
         public void BringIntoView(int index)
         {

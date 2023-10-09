@@ -4,7 +4,7 @@ using Microsoft.Xaml.Behaviors;
 
 namespace JsonViewer.Controls.Behaviors
 {
-    public class BindableSelectedItemBehavior : Behavior<TreeView>
+    public sealed class BindableSelectedItemBehavior : Behavior<TreeView>
     {
         public object SelectedItem
         {
