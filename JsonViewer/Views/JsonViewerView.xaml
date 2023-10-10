@@ -155,7 +155,7 @@
                                     <TextBlock.Text>
                                         <MultiBinding StringFormat="{}{0} из {1}">
                                             <Binding Path="MatchesCount" />
-                                            <Binding Path="MaxIndex" />
+                                            <Binding Path="TotalCount" />
                                         </MultiBinding>
                                     </TextBlock.Text>
                                 </TextBlock>

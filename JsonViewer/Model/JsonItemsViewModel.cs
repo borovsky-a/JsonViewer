@@ -96,7 +96,7 @@ namespace JsonViewer.Model
         private JsonItem? _original;
 
         [ObservableProperty]
-        private int _maxIndex;
+        private int _totalCount;
 
         [ObservableProperty]
         private ItemsControl? _view;
@@ -139,7 +139,7 @@ namespace JsonViewer.Model
             IsLoading = true;
             Error = null;
             MatchesCount = 0;
-            MaxIndex = 0;
+            TotalCount = 0;
             Original = new JsonItem();
 
             var response = await
@@ -149,8 +149,8 @@ namespace JsonViewer.Model
             {
                 Original = response.Value;
             }
-            MaxIndex = response.MaxIndex;
-            MatchesCount = MaxIndex;
+            TotalCount = response.MaxIndex;
+            MatchesCount = TotalCount;
             Error = response.Error;
             if (!IsError && !string.IsNullOrEmpty(Filter))
             {
