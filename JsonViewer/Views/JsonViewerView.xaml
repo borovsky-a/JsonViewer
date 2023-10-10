@@ -105,13 +105,11 @@
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="24" />
-                                    <ColumnDefinition Width="24" />
-                                    <ColumnDefinition Width="28" />
+                                    <ColumnDefinition Width="auto" />
                                 </Grid.ColumnDefinitions>
                                 <TextBox
                                     Grid.Column="0"
-                                    Margin="4,4,0,4"
+                                    Margin="1.5,4,1.5,4"
                                     IsEnabled="{Binding CanExecute}"
                                     Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}">
                                     <TextBox.InputBindings>
@@ -121,36 +119,35 @@
                                             Gesture="Enter" />
                                     </TextBox.InputBindings>
                                 </TextBox>
-                                <Button
-                                    Grid.Column="1"
-                                    Width="20"
-                                    MinWidth="0"
-                                    Margin="2,5.5,0,5.5"
-                                    Padding="0"
-                                    Command="{Binding FilterCommand}"
-                                    Content="&#128269;"
-                                    FontSize="15"
-                                    IsEnabled="{Binding CanExecute}" />
-                                <Button
-                                    Grid.Column="2"
-                                    Width="20"
-                                    MinWidth="0"
-                                    Margin="4,5.5,0,5.5"
-                                    Padding="0"
-                                    Command="{Binding GoPrevCommand}"
-                                    Content="&#129033;"
-                                    FontSize="15"
-                                    IsEnabled="{Binding CanNavigate}" />
-                                <Button
-                                    Grid.Column="3"
-                                    Width="20"
-                                    MinWidth="0"
-                                    Margin="0,5.5,0,5.5"
-                                    Padding="0"
-                                    Command="{Binding GoNextCommand}"
-                                    Content="&#129035;"
-                                    FontSize="15"
-                                    IsEnabled="{Binding CanNavigate}" />
+                                <UniformGrid Grid.Column="1" Columns="3">
+                                    <Button
+                                        Width="20"
+                                        MinWidth="0"
+                                        Margin="0,4.2,1.5,5"
+                                        Padding="0"
+                                        Command="{Binding FilterCommand}"
+                                        Content="&#128269;"
+                                        FontSize="13"
+                                        IsEnabled="{Binding CanExecute}" />
+                                    <Button
+                                        Width="20"
+                                        MinWidth="0"
+                                        Margin="0,4.2,1.5,5"
+                                        Padding="0"
+                                        Command="{Binding GoPrevCommand}"
+                                        Content="&#129033;"
+                                        FontSize="15"
+                                        IsEnabled="{Binding CanNavigate}" />
+                                    <Button
+                                        Width="20"
+                                        MinWidth="0"
+                                        Margin="0,4.2,1.5,5"
+                                        Padding="0"
+                                        Command="{Binding GoNextCommand}"
+                                        Content="&#129035;"
+                                        FontSize="15"
+                                        IsEnabled="{Binding CanNavigate}" />
+                                </UniformGrid>
                             </Grid>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Margin="8,8,0,0" Text="Количество строк:" />
@@ -168,6 +165,7 @@
                     </StackPanel>
                     <TreeView
                         Grid.Row="1"
+                        Margin="1.5"
                         ItemsSource="{Binding CurrentValue.Nodes}"
                         VirtualizingPanel.IsVirtualizing="true">
                         <e:Interaction.Behaviors>
