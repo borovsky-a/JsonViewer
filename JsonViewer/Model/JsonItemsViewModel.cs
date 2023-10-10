@@ -37,6 +37,10 @@ namespace JsonViewer.Model
         public IAsyncRelayCommand FilterCommand =>
             new AsyncRelayCommand(() =>
             {
+                if (Original == null || !Original.Nodes.Any())
+                {
+                    return Task.CompletedTask;
+                }
                 IsLoading = true;
                 return Task.Run(() =>
                 {
@@ -89,6 +93,12 @@ namespace JsonViewer.Model
                var stringValue = CurrentPreviewItem.ItemType == JsonItemType.Value ? CurrentPreviewItem.Name + ": " + CurrentPreviewItem.Value : CurrentPreviewItem.Name;
                Clipboard.SetText(stringValue);
            });
+
+        public IRelayCommand CancelReadFileCommand =>
+            new RelayCommand(() =>
+            {
+                _jsonReaderProcessor.CancelReadFileCommand();
+            });
 
         public string Filter
         {
@@ -149,7 +159,6 @@ namespace JsonViewer.Model
             get => _currentPreviewItem;
             set => SetProperty(ref _currentPreviewItem, value);
         }
-
 
         public ItemsControl View
         {

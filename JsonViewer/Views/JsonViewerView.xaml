@@ -20,6 +20,7 @@
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
         <converters:DisplayNodeValueConverter x:Key="DisplayNodeValueConverter" />
         <Style TargetType="Button">
             <Setter Property="Padding" Value="4px" />
@@ -70,22 +71,21 @@
                     <StackPanel>
                         <UniformGrid Columns="3">
                             <Button
-                                Grid.Column="0"
                                 Command="{Binding ReadFileCommand}"
                                 CommandParameter="False"
-                                IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBooleanConverter}}">
+                                Visibility="{Binding IsLoading, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                                 <TextBlock Text="Выбор" TextTrimming="CharacterEllipsis" />
                             </Button>
                             <Button
-                                Grid.Column="1"
-                                Command="{Binding ExpandCommand}"
-                                IsEnabled="{Binding CanExecute}">
+                                Command="{Binding CancelReadFileCommand}"
+                                CommandParameter="False"
+                                Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <TextBlock Text="Отмена" TextTrimming="CharacterEllipsis" />
+                            </Button>
+                            <Button Command="{Binding ExpandCommand}" IsEnabled="{Binding CanExecute}">
                                 <TextBlock Text="Развернуть" TextTrimming="CharacterEllipsis" />
                             </Button>
-                            <Button
-                                Grid.Column="2"
-                                Command="{Binding CollapseCommand}"
-                                IsEnabled="{Binding CanExecute}">
+                            <Button Command="{Binding CollapseCommand}" IsEnabled="{Binding CanExecute}">
                                 <TextBlock Text="Свернуть" TextTrimming="CharacterEllipsis" />
                             </Button>
                         </UniformGrid>

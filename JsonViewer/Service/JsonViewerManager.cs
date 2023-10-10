@@ -12,6 +12,7 @@ namespace JsonViewer.Service
 {
     public sealed class JsonViewerManager
     {
+        private CancellationTokenSource _cts;
         private int _count;
         private List<JsonItem> _items;
         public JsonViewerManager()
@@ -23,7 +24,6 @@ namespace JsonViewer.Service
         {
             return _items.Where(o => o.IsMatch);
         }
-
 
         public void CollapseItems()
         {
@@ -52,39 +52,42 @@ namespace JsonViewer.Service
                 }
                 return _items.Count;
             }
-            else
+            var matchesCount = 0;
+            foreach (var item in _items)
             {
-                var matchesCount = 0;
-                foreach (var item in _items)
-                {                   
-                    if (string.IsNullOrEmpty(item.Name))
-                    {
-                        continue;
-                    }
-                    if (item.Name.ContainsIgnoreCase(filter) ||
-                        item.Value.ContainsIgnoreCase(filter))
-                    {
-                        matchesCount++;
-                        item.IsMatch = true;
-                        item.IsVisible = true;
-                        item.SetParentsState(o =>
-                        {
-                            o.IsMatch = true;
-                            o.IsExpanded = true;
-                            o.IsVisible = true;
-                        });
-                    }
-                    else
-                    {
-                        item.IsVisible = false;
-                    }
+                if (string.IsNullOrEmpty(item.Name))
+                {
+                    continue;
                 }
-                return matchesCount;
+                if (item.Name.ContainsIgnoreCase(filter) || item.Value.ContainsIgnoreCase(filter))
+                {
+                    matchesCount++;
+                    item.IsMatch = true;
+                    item.IsVisible = true;
+                    item.SetParentsState(o =>
+                    {
+                        o.IsMatch = true;
+                        o.IsExpanded = true;
+                        o.IsVisible = true;
+                    });
+                }
+                else
+                {
+                    item.IsVisible = false;
+                }
             }
+            return matchesCount;
         }
+
+        public void CancelReadFileCommand() => _cts?.Cancel();
 
         public async Task<ReaderResponse> ReadJson(string path)
         {
+            if(_cts != null && !_cts.IsCancellationRequested)
+            {
+                _cts.Cancel();
+            }
+            _cts = new CancellationTokenSource();
             _count = 0;
             _items = new List<JsonItem>();
             var response = new ReaderResponse();
@@ -103,7 +106,7 @@ namespace JsonViewer.Service
                 using (var tReader = File.OpenText(path))
                 using (var jReader = new JsonTextReader(tReader))
                 {
-                    jToken = await JToken.LoadAsync(jReader);                     
+                    jToken = await JToken.LoadAsync(jReader, _cts.Token);                     
                 }
                 if (jToken is JArray jArray)
                 {
@@ -117,6 +120,10 @@ namespace JsonViewer.Service
                 response.ItemsList = _items;
                 return response;
             }
+            catch(OperationCanceledException ex)
+            {
+                return response.WithError(ex.ToString());
+            }
             catch (Exception ex)
             {
                 return response.WithError(ex.ToString());
@@ -125,6 +132,7 @@ namespace JsonViewer.Service
 
         private JsonItem ProcessObject(JObject jObject, string name, JsonItem parent)
         {
+            _cts.Token.ThrowIfCancellationRequested();
             var item =
                 new JsonItem { Name = name, ItemType = JsonItemType.Object, Index = Interlocked.Increment(ref _count), Parent = parent};
             _items.Add(item);
@@ -141,6 +149,7 @@ namespace JsonViewer.Service
 
         private JsonItem ProcessArray(JArray jArray, string name, JsonItem parent)
         {
+            _cts.Token.ThrowIfCancellationRequested();
             var item = new JsonItem { Name = name, ItemType = JsonItemType.Array, Index = Interlocked.Increment(ref _count), Parent = parent };
             _items.Add(item);
             if (parent != null)
@@ -159,6 +168,7 @@ namespace JsonViewer.Service
 
         private JsonItem ProcessValue(JValue jValue, string name, JsonItem parent)
         {
+            _cts.Token.ThrowIfCancellationRequested();
             var item = new JsonItem { Name = name, Value = jValue.Value?.ToString(), ItemType = JsonItemType.Value, Index = Interlocked.Increment(ref _count), Parent = parent };
             parent.Nodes.Add(item);
             _items.Add(item);
