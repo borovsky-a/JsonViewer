@@ -10,12 +10,8 @@ namespace JsonViewer.Controls.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null) return "";
-            var item = (JsonItem)value;
-            if (string.IsNullOrEmpty(item.Value))
-            {
-                return $"{item.Name}";
-            }
-            return $"{item.Name} : {item.Value}";
+            var item = (JsonItem)value;            
+            return item.GetDisplayValue();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

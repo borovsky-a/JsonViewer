@@ -59,7 +59,7 @@ namespace JsonViewer.Service
                 {
                     continue;
                 }
-                if (item.Name.ContainsIgnoreCase(filter) || item.Value.ContainsIgnoreCase(filter))
+                if (ItemIsContainsTo(item, filter))
                 {
                     matchesCount++;
                     item.IsMatch = true;
@@ -77,6 +77,24 @@ namespace JsonViewer.Service
                 }
             }
             return matchesCount;
+        }
+
+        private bool ItemIsContainsTo(JsonItem item, string value)
+        {
+            if(item.ItemType == JsonItemType.Value)
+            {
+                var itemValue = item.GetDisplayValue();
+                return itemValue.ContainsIgnoreCase(value);
+            }
+            if (item.Name.ContainsIgnoreCase(value))
+            {
+                return true;
+            }
+            if(!string.IsNullOrEmpty(item.Value) && item.Value.ContainsIgnoreCase(value))
+            {
+                return true;
+            }
+            return false;
         }
 
         public void CancelReadFileCommand() => _cts?.Cancel();

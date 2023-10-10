@@ -81,7 +81,7 @@ namespace JsonViewer.Model
                {
                    return;
                }
-               var stringValue = CurrentPreviewItem.ItemType == JsonItemType.Value ? CurrentPreviewItem.Name + ": " + CurrentPreviewItem.Value : CurrentPreviewItem.Name;
+               var stringValue = CurrentPreviewItem.GetDisplayValue();
                Clipboard.SetText(stringValue);
            });
 

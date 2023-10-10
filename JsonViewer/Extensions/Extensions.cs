@@ -20,6 +20,18 @@ namespace JsonViewer
             return CultureInfo.CurrentCulture.CompareInfo.IndexOf(value1, value2, CompareOptions.IgnoreCase) >= 0;
         }    
 
+        public static string GetDisplayValue(this JsonItem item)
+        {
+            if(item.ItemType == JsonItemType.Value)
+            {
+                if (string.IsNullOrEmpty(item.Value))
+                {
+                    return item.Name;
+                }
+                return $"{item.Name} : {item.Value}";
+            }
+            return item.Name;
+        }
         public static void GoNext(this ItemsControl container, IEnumerable<JsonItem> matchItems)
         {
             SelectItem(container, matchItems, true);

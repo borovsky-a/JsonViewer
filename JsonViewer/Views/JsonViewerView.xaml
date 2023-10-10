@@ -213,6 +213,12 @@
                                 </Style.Resources>
                             </Style>
                         </TreeView.ItemContainerStyle>
+                        <TreeView.InputBindings>
+                            <KeyBinding
+                                Key="C"
+                                Command="{Binding ClipboardCopyCommand}"
+                                Modifiers="Control" />
+                        </TreeView.InputBindings>
                     </TreeView>
                 </Grid>
             </Border>
