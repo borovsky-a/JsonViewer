@@ -13,11 +13,11 @@ namespace JsonViewer.Model
 
         public JsonItem()
         {
-            Nodes = new ObservableCollection<JsonItem>();
+            Nodes = new List<JsonItem>();
         }
         public JsonItem Parent { get; set; }
 
-        public ICollection<JsonItem> Nodes { get; set; }
+        public IList<JsonItem> Nodes { get; set; }
 
         public JsonItemType ItemType { get; set; }
 
