@@ -11,20 +11,9 @@ using System.Windows.Controls;
 
 namespace JsonViewer.Model
 {
-    public sealed class JsonItemsViewModel : ObservableObject
+    public sealed partial class JsonItemsViewModel : ObservableObject
     {
-        private readonly JsonViewerManager _jsonReaderProcessor;
-        private JsonItem _currentItem;
-        private string _filePath;
-        private string _error;
-        private string _filter;
-        private JsonItem _original;
-        private int _maxIndex;
-        private ItemsControl _view;
-        private bool _isLoading;
-        private int _matchesCount;
-        private JsonItem _currentValue;
-        private JsonItem _currentPreviewItem;
+        private readonly JsonViewerManager _jsonReaderProcessor;       
 
         public JsonItemsViewModel()
         {
@@ -65,13 +54,13 @@ namespace JsonViewer.Model
         public IRelayCommand GoNextCommand =>
             new RelayCommand(() =>
             {
-                View.GoNext(_jsonReaderProcessor.GetMatchItems());
+                View?.GoNext(_jsonReaderProcessor.GetMatchItems());               
             });
 
         public IRelayCommand GoPrevCommand =>
             new RelayCommand<object>((parameter) =>
             {
-                View.GoPrev(_jsonReaderProcessor.GetMatchItems());
+                View?.GoPrev(_jsonReaderProcessor.GetMatchItems());
             });
 
         public IRelayCommand ClipboardCopyCommand =>
@@ -91,71 +80,38 @@ namespace JsonViewer.Model
                 _jsonReaderProcessor.CancelReadFileCommand();
             });
 
-        public string Filter
-        {
-            get => _filter;
-            set => SetProperty(ref _filter, value);
-        }
+        [ObservableProperty]
+        private JsonItem? _current;
 
-        public string Error
-        {
-            get => _error;
-            set => SetProperty(ref _error, value);
-        }
+        [ObservableProperty]
+        private string? _filePath;
 
-        public string FilePath
-        {
-            get => _filePath;
-            set => SetProperty(ref _filePath, value);
-        }
+        [ObservableProperty]
+        private string? _error;
 
-        public int MaxIndex
-        {
-            get => _maxIndex;
-            set => SetProperty(ref _maxIndex, value);
-        }
+        [ObservableProperty]
+        private string? _filter;
 
-        public int MatchesCount
-        {
-            get => _matchesCount;
-            set => SetProperty(ref _matchesCount, value);
-        }
+        [ObservableProperty]
+        private JsonItem? _original;
 
-        public bool IsLoading
-        {
-            get => _isLoading;
-            set => SetProperty(ref _isLoading, value);
-        }
+        [ObservableProperty]
+        private int _maxIndex;
 
-        public JsonItem Original
-        {
-            get => _original;
-            set => SetProperty(ref _original, value);
-        }
+        [ObservableProperty]
+        private ItemsControl? _view;
 
-        public JsonItem Current
-        {
-            get => _currentItem;
-            set => SetProperty(ref _currentItem, value);
-        }
+        [ObservableProperty]
+        private bool _isLoading;
 
-        public JsonItem CurrentValue
-        {
-            get => _currentValue;
-            set => SetProperty(ref _currentValue, value);
-        }
+        [ObservableProperty]
+        private int _matchesCount;
 
-        public JsonItem CurrentPreviewItem
-        {
-            get => _currentPreviewItem;
-            set => SetProperty(ref _currentPreviewItem, value);
-        }
+        [ObservableProperty]
+        private JsonItem? _currentValue;
 
-        public ItemsControl View
-        {
-            get => _view;
-            set => SetProperty(ref _view, value);
-        }
+        [ObservableProperty]
+        private JsonItem? _currentPreviewItem;
 
         public bool CanExecute =>
             View != null && !IsLoading;
@@ -166,7 +122,7 @@ namespace JsonViewer.Model
         public bool IsError =>
             !string.IsNullOrEmpty(Error);
 
-        private async Task ReadFileCommandExecute(string refresh)
+        private async Task ReadFileCommandExecute(string? refresh)
         {
             var isRefreshCommand = bool.Parse(refresh);
             if (!TryGetFilePath(isRefreshCommand, out var filePath))
@@ -174,15 +130,20 @@ namespace JsonViewer.Model
                 return;
             }
 
+            FilePath = filePath;
+
+            if(string.IsNullOrEmpty(FilePath))
+            {
+                return;
+            }
             IsLoading = true;
             Error = null;
             MatchesCount = 0;
             MaxIndex = 0;
-            FilePath = filePath;
             Original = new JsonItem();
 
             var response = await
-                     _jsonReaderProcessor.ReadJson(FilePath);
+                     _jsonReaderProcessor.ReadJson(FilePath!);
 
             if (string.IsNullOrEmpty(response.Error))
             {
@@ -198,7 +159,7 @@ namespace JsonViewer.Model
             IsLoading = false;
         }
 
-        private bool TryGetFilePath(bool refresh, out string filePath)
+        private bool TryGetFilePath(bool refresh, out string? filePath)
         {
             if (refresh)
             {
@@ -261,7 +222,7 @@ namespace JsonViewer.Model
                     }
                 case nameof(Current):
                     {
-                        CurrentValue = new JsonItem { Nodes = new List<JsonItem> { Current } };
+                        CurrentValue = new JsonItem { Nodes = Current != null ? new List<JsonItem> { Current } : new List<JsonItem>() };
                         break;
                     }
                 case nameof(Error):

@@ -12,7 +12,7 @@ namespace JsonViewer.Service
 {
     public sealed class JsonViewerManager
     {
-        private CancellationTokenSource _cts;
+        private CancellationTokenSource? _cts;
         private int _count;
         private List<JsonItem> _items;
         public JsonViewerManager()
@@ -41,7 +41,7 @@ namespace JsonViewer.Service
             }
         }
 
-        public int FilteredItems(string filter)
+        public int FilteredItems(string? filter)
         {
             if (string.IsNullOrEmpty(filter))
             {
@@ -59,7 +59,7 @@ namespace JsonViewer.Service
                 {
                     continue;
                 }
-                if (ItemIsContainsTo(item, filter))
+                if (ItemIsContainsTo(item, filter!))
                 {
                     matchesCount++;
                     item.IsMatch = true;
@@ -90,7 +90,7 @@ namespace JsonViewer.Service
             {
                 return true;
             }
-            if(!string.IsNullOrEmpty(item.Value) && item.Value.ContainsIgnoreCase(value))
+            if(!string.IsNullOrEmpty(item.Value) && item.Value!.ContainsIgnoreCase(value))
             {
                 return true;
             }
@@ -138,7 +138,7 @@ namespace JsonViewer.Service
                 response.ItemsList = _items;
                 return response;
             }
-            catch(OperationCanceledException ex)
+            catch(OperationCanceledException)
             {
                 return response.WithError("Операция отменена.");
             }
@@ -148,9 +148,9 @@ namespace JsonViewer.Service
             }
         }
 
-        private JsonItem ProcessObject(JObject jObject, string name, JsonItem parent)
+        private JsonItem ProcessObject(JObject jObject, string name, JsonItem? parent)
         {
-            _cts.Token.ThrowIfCancellationRequested();
+            ThrowIfRequired();
             var item =
                 new JsonItem { Name = name, ItemType = JsonItemType.Object, Index = Interlocked.Increment(ref _count), Parent = parent};
             _items.Add(item);
@@ -165,9 +165,9 @@ namespace JsonViewer.Service
             return item;
         }
 
-        private JsonItem ProcessArray(JArray jArray, string name, JsonItem parent)
+        private JsonItem ProcessArray(JArray jArray, string name, JsonItem? parent)
         {
-            _cts.Token.ThrowIfCancellationRequested();
+            ThrowIfRequired();
             var item = new JsonItem { Name = name, ItemType = JsonItemType.Array, Index = Interlocked.Increment(ref _count), Parent = parent };
             _items.Add(item);
             if (parent != null)
@@ -179,14 +179,14 @@ namespace JsonViewer.Service
                 var jToken = jArray[i];
                 var desk = (jToken is JArray) || (jToken is JValue) ? "" : ": " + jToken?.ToString(Formatting.None);
             
-                ProcessToken(jToken, $"[{i}]{desk}", item);
+                ProcessToken(jToken!, $"[{i}]{desk}", item);
             }
             return item;
         }
 
         private JsonItem ProcessValue(JValue jValue, string name, JsonItem parent)
         {
-            _cts.Token.ThrowIfCancellationRequested();
+            ThrowIfRequired();
             var item = new JsonItem { Name = name, Value = jValue.Value?.ToString(), ItemType = JsonItemType.Value, Index = Interlocked.Increment(ref _count), Parent = parent };
             parent.Nodes.Add(item);
             _items.Add(item);
@@ -207,6 +207,11 @@ namespace JsonViewer.Service
             {
                 ProcessObject(jObject, name, parent);
             }
+        }
+
+        private void ThrowIfRequired()
+        {
+            _cts!.Token.ThrowIfCancellationRequested();
         }
     }
 }

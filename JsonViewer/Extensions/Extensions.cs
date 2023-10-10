@@ -10,7 +10,7 @@ using System.Windows.Media;
 namespace JsonViewer
 {
     public static class Extensions
-    {      
+    {
         public static bool ContainsIgnoreCase(this string value1, string value2)
         {
             if (value1 == null || value2 == null)
@@ -18,11 +18,11 @@ namespace JsonViewer
                 return false;
             }
             return CultureInfo.CurrentCulture.CompareInfo.IndexOf(value1, value2, CompareOptions.IgnoreCase) >= 0;
-        }    
+        }
 
         public static string GetDisplayValue(this JsonItem item)
         {
-            if(item.ItemType == JsonItemType.Value)
+            if (item.ItemType == JsonItemType.Value)
             {
                 if (string.IsNullOrEmpty(item.Value))
                 {
@@ -43,17 +43,17 @@ namespace JsonViewer
         }
 
         public static void SetParentsState(this JsonItem node, Action<JsonItem> action)
-        { 
+        {
             var parent = node?.Parent;
             while (parent != null)
             {
                 action(parent);
                 parent = parent.Parent;
-            }              
-        }               
+            }
+        }
 
         public static void SelectItem(this ItemsControl container,
-            IEnumerable<JsonItem> matchItems, 
+            IEnumerable<JsonItem> matchItems,
             bool? next = default)
         {
             var itemsCount = matchItems.Count();
@@ -69,11 +69,11 @@ namespace JsonViewer
             }
             if (currentItem.IsSelected)
             {
-                var nextItem = next.HasValue ?  (next.Value ?
-                    GetNextItem(matchItems, currentItem) : 
+                var nextItem = next.HasValue ? (next.Value ?
+                    GetNextItem(matchItems, currentItem) :
                     GetPrevItem(matchItems, currentItem)) : currentItem;
 
-                if(nextItem != currentItem)
+                if (nextItem != currentItem)
                 {
                     currentItem.IsSelected = false;
                 }
@@ -95,7 +95,7 @@ namespace JsonViewer
                     treeViewItem.BringIntoView();
                 }
             }
-        }            
+        }
 
         private static JsonItem GetPrevItem(IEnumerable<JsonItem> items, JsonItem current)
         {
@@ -136,9 +136,9 @@ namespace JsonViewer
             return current;
         }
 
-        private static TreeViewItem GetTreeViewItem(this ItemsControl container, JsonItem item)
+        private static TreeViewItem? GetTreeViewItem(this ItemsControl container, JsonItem item)
         {
-            if(container == null)
+            if (container == null)
             {
                 return null;
             }
@@ -192,7 +192,7 @@ namespace JsonViewer
                 if (virtualizingPanel == null)
                 {
                     subContainer.BringIntoView();
-                }                            
+                }
 
                 if (subContainer.DataContext is JsonItem model)
                 {
@@ -218,22 +218,20 @@ namespace JsonViewer
             conainer.IsExpanded = true;
 
             return GetTreeViewItem(conainer, item);
-        }         
+        }
 
-        private static T FindVisualChild<T>(Visual visual) where T : Visual
+        private static T? FindVisualChild<T>(Visual visual) where T : Visual
         {
             for (int i = 0; i < VisualTreeHelper.GetChildrenCount(visual); i++)
             {
                 Visual child = (Visual)VisualTreeHelper.GetChild(visual, i);
                 if (child != null)
                 {
-                    T correctlyTyped = child as T;
-                    if (correctlyTyped != null)
+                    if (child is T c)
                     {
-                        return correctlyTyped;
+                        return c;
                     }
-
-                    T descendent = FindVisualChild<T>(child);
+                    var descendent = FindVisualChild<T>(child);
                     if (descendent != null)
                     {
                         return descendent;

@@ -9,8 +9,8 @@ namespace JsonViewer.Model
         {
             ItemsList = new List<JsonItem>();
         }
-        public string Error { get; set; }
-        public JsonItem Value { get; set; }
+        public string? Error { get; set; }
+        public JsonItem? Value { get; set; }
         public List<JsonItem> ItemsList { get; set; }  
         public int MaxIndex { get; set; }
 

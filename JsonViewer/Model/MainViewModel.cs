@@ -1,8 +1,7 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-
+﻿
 namespace JsonViewer.Model
 {
-    public sealed class MainViewModel : ObservableObject
+    public sealed class MainViewModel
     {
         public MainViewModel()
         {
