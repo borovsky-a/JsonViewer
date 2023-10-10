@@ -39,7 +39,7 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
+        <Grid Grid.Row="0" Margin="0,8,0,0">
             <ProgressBar
                 Background="Transparent"
                 BorderThickness="0"
@@ -163,11 +163,20 @@
                         </StackPanel>
                         <TextBlock Margin="8,8,0,0" Text="Значение:" />
                     </StackPanel>
+                    <TextBox
+                        Grid.Row="1"
+                        Margin="1.5"
+                        Foreground="#ff3333"
+                        IsReadOnly="True"
+                        Text="{Binding Error}"
+                        TextWrapping="Wrap"
+                        Visibility="{Binding IsError, Converter={StaticResource BooleanToVisibilityConverter}}" />
                     <TreeView
                         Grid.Row="1"
                         Margin="1.5"
                         ItemsSource="{Binding CurrentValue.Nodes}"
-                        VirtualizingPanel.IsVirtualizing="true">
+                        VirtualizingPanel.IsVirtualizing="true"
+                        Visibility="{Binding IsError, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                         <e:Interaction.Behaviors>
                             <behaviours:BindableSelectedItemBehavior SelectedItem="{Binding CurrentPreviewItem, Mode=TwoWay}" />
                         </e:Interaction.Behaviors>

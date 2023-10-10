@@ -140,7 +140,7 @@ namespace JsonViewer.Service
             }
             catch(OperationCanceledException ex)
             {
-                return response.WithError(ex.ToString());
+                return response.WithError("Операция отменена.");
             }
             catch (Exception ex)
             {

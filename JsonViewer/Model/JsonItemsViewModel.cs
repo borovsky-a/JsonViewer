@@ -157,11 +157,14 @@ namespace JsonViewer.Model
             set => SetProperty(ref _view, value);
         }
 
-        public bool CanExecute => View != null &&
-           !IsLoading;
+        public bool CanExecute =>
+            View != null && !IsLoading;
 
         public bool CanNavigate =>
-            CanExecute && _matchesCount > 0 && _matchesCount < 1200000 && !string.IsNullOrEmpty(Filter);      
+            CanExecute && MatchesCount > 0 && MatchesCount < 1200000 && !string.IsNullOrEmpty(Filter) && !IsError;
+
+        public bool IsError =>
+            !string.IsNullOrEmpty(Error);
 
         private async Task ReadFileCommandExecute(string refresh)
         {
@@ -170,26 +173,28 @@ namespace JsonViewer.Model
             {
                 return;
             }
+
             IsLoading = true;
-            FilePath = filePath;
+            Error = null;
             MatchesCount = 0;
             MaxIndex = 0;
+            FilePath = filePath;
             Original = new JsonItem();
-            await Task.Run(async () =>
+
+            var response = await
+                     _jsonReaderProcessor.ReadJson(FilePath);
+
+            if (string.IsNullOrEmpty(response.Error))
             {
-                var response = await
-                    _jsonReaderProcessor.ReadJson(FilePath).ConfigureAwait(false);
-                if (!string.IsNullOrEmpty(response.Error))
-                {
-                    Error = response.Error;
-                }
-                else
-                {
-                    Original = response.Value;
-                }
-                MaxIndex = response.MaxIndex;
-                MatchesCount = MaxIndex;
-            });
+                Original = response.Value;
+            }
+            MaxIndex = response.MaxIndex;
+            MatchesCount = MaxIndex;
+            Error = response.Error;
+            if (!IsError && !string.IsNullOrEmpty(Filter))
+            {
+                await OnFilterExecute();
+            }
             IsLoading = false;
         }
 
@@ -206,7 +211,7 @@ namespace JsonViewer.Model
                 filePath = openFileDialog.FileName;
                 return !string.IsNullOrEmpty(filePath);
             }
-            filePath = default;
+            filePath = null;
             return false;
         }
 
@@ -233,10 +238,11 @@ namespace JsonViewer.Model
             IsLoading = true;
             return Task.Run(() =>
             {
-               var matchesCount = _jsonReaderProcessor.FilteredItems(Filter);
-               return matchesCount;
+                var matchesCount = _jsonReaderProcessor.FilteredItems(Filter);
+                return matchesCount;
 
-            }).ContinueWith(o=> {
+            }).ContinueWith(o =>
+            {
                 IsLoading = false;
                 MatchesCount = o.Result;
             }, TaskContinuationOptions.ExecuteSynchronously);
@@ -247,11 +253,6 @@ namespace JsonViewer.Model
             base.OnPropertyChanged(e);
             switch (e.PropertyName)
             {
-                case nameof(Original):
-                    {
-                        Filter = null;
-                        break;
-                    }
                 case nameof(IsLoading):
                     {
                         OnPropertyChanged(nameof(CanNavigate));
@@ -261,6 +262,11 @@ namespace JsonViewer.Model
                 case nameof(Current):
                     {
                         CurrentValue = new JsonItem { Nodes = new List<JsonItem> { Current } };
+                        break;
+                    }
+                case nameof(Error):
+                    {
+                        OnPropertyChanged(nameof(IsError));
                         break;
                     }
                 default:
