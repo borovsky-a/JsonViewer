@@ -240,15 +240,5 @@ namespace JsonViewer
             }
             return null;
         }
-
-        private static List<JsonItem> ToList(JsonItem node, List<JsonItem> nodes)
-        {
-            nodes.Add(node);
-            foreach (var item in node.Nodes)
-            {
-                ToList(item, nodes);
-            }
-            return nodes;
-        }
     }
 }
