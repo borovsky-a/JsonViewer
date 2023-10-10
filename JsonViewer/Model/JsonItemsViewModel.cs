@@ -37,16 +37,7 @@ namespace JsonViewer.Model
         public IAsyncRelayCommand FilterCommand =>
             new AsyncRelayCommand(() =>
             {
-                if (Original == null || !Original.Nodes.Any())
-                {
-                    return Task.CompletedTask;
-                }
-                IsLoading = true;
-                return Task.Run(() =>
-                {
-                    OnFilterExecute();
-                    IsLoading = false;
-                });
+                return OnFilterExecute();
             });
 
         public IAsyncRelayCommand ExpandCommand =>
@@ -170,12 +161,7 @@ namespace JsonViewer.Model
            !IsLoading;
 
         public bool CanNavigate =>
-            CanExecute && _matchesCount > 0 && _matchesCount < 1200000 && !string.IsNullOrEmpty(Filter);
-
-        private void FilterExecute()
-        {
-            MatchesCount = _jsonReaderProcessor.FilteredItems(Filter);
-        }
+            CanExecute && _matchesCount > 0 && _matchesCount < 1200000 && !string.IsNullOrEmpty(Filter);      
 
         private async Task ReadFileCommandExecute(string refresh)
         {
@@ -238,14 +224,22 @@ namespace JsonViewer.Model
             }
         }
 
-        private void OnFilterExecute()
+        private Task OnFilterExecute()
         {
-            if (Original != null)
+            if (Original == null || !Original.Nodes.Any())
             {
-                FilterExecute();
+                return Task.CompletedTask;
             }
-            OnPropertyChanged(nameof(CanNavigate));
-            OnPropertyChanged(nameof(CanExecute));
+            IsLoading = true;
+            return Task.Run(() =>
+            {
+               var matchesCount = _jsonReaderProcessor.FilteredItems(Filter);
+               return matchesCount;
+
+            }).ContinueWith(o=> {
+                IsLoading = false;
+                MatchesCount = o.Result;
+            }, TaskContinuationOptions.ExecuteSynchronously);
         }
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
